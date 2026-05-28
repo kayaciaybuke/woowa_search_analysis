@@ -273,9 +273,9 @@ SELECT
 
   -- ============= STATISTICAL SIGNIFICANCE =============
   CASE
-    WHEN ng.searches IS NULL OR aws.searches IS NULL THEN 'N/A'
-    WHEN ng.searches < 30 OR aws.searches < 30 THEN 'Insufficient Data'
-    WHEN ng.ctr = 0 AND aws.ctr = 0 THEN 'No Clicks'
+    WHEN woowa_search.searches IS NULL OR global_search.searches IS NULL THEN 'N/A'
+    WHEN woowa_search.searches < 30 OR global_search.searches < 30 THEN 'Insufficient Data'
+    WHEN woowa_search.ctr = 0 AND global_search.ctr = 0 THEN 'No Clicks'
     ELSE
       CASE
         WHEN ABS(
@@ -291,9 +291,9 @@ SELECT
   END AS ctr_statistically_significant,
 
   CASE
-    WHEN ng.searches IS NULL OR aws.searches IS NULL THEN 'N/A'
-    WHEN ng.searches < 30 OR aws.searches < 30 THEN 'Insufficient Data'
-    WHEN ng.cvr = 0 AND aws.cvr = 0 THEN 'No Orders'
+    WHEN woowa_search.searches IS NULL OR global_search.searches IS NULL THEN 'N/A'
+    WHEN woowa_search.searches < 30 OR global_search.searches < 30 THEN 'Insufficient Data'
+    WHEN woowa_search.cvr = 0 AND global_search.cvr = 0 THEN 'No Orders'
     ELSE
       CASE
         WHEN ABS(

@@ -1,6 +1,88 @@
 # Query Changes - Latest Update
 
-## Changes Made on May 28, 2026
+## Changes Made on May 28, 2026 (v3.0 - AB Test Support)
+
+### 🔧 FIXED: Corrected Variation Values (Critical Fix)
+
+**Issue:** Initial AB test queries used wrong variation values ('control'/'treatment')  
+**Actual values:** 'A' (Control), 'B' (Treatment), 'C' (Non-participants)
+
+**Changes made:**
+1. Updated all WHERE clauses: `variation = 'control'` → `variation = 'A'`
+2. Updated all WHERE clauses: `variation = 'treatment'` → `variation = 'B'`  
+3. Added filter: `WHERE variation IN ('A', 'B')` to exclude C (non-participants)
+
+**Variation Distribution:**
+- **A = Control**: ~18K users (~50% of AB test participants)
+- **B = Treatment**: ~18K users (~50% of AB test participants)
+- **C = Non-participants**: ~1.77M users (not in AB test, excluded)
+
+**Files updated:**
+- `overall_comparison_query_ab_test.sql`
+- `head_torso_tail_comparison_query_ab_test.sql`
+- `comprehensive_comparison_query_ab_test.sql`
+- `AB_TEST_QUICK_START.md`
+- `workflows/woowa-ab-test-analysis.md`
+
+**Testing:** Queries now return data with ~50/50 traffic split between A and B ✅
+
+---
+
+### 🆕 NEW: AB Test Analysis Queries Added
+
+**Three new queries for Control vs Treatment comparison:**
+1. `overall_comparison_query_ab_test.sql` - AB test overall summary
+2. `head_torso_tail_comparison_query_ab_test.sql` - AB test by tier
+3. `comprehensive_comparison_query_ab_test.sql` - AB test per search query
+
+**Key Features:**
+- ✅ **Eppo assignment integration** - Uses `dhub-gd-analytics.eppo_input.gs_woowa_assignments`
+- ✅ **D+1 lag support** - Designed for yesterday's data (assignment table has D+1 refresh)
+- ✅ **Exposure gating** - Only assigned users with post-assignment events
+- ✅ **Post-assignment filtering** - `eventTimestamp >= assignment_timestamp`
+- ✅ **Unified tiers** - Tiers calculated on combined Control + Treatment volume
+- ✅ **Traffic split validation** - Shows `treatment_traffic_pct` (should be ~50%)
+- ✅ **Statistical significance** - Same z-test as platform comparison queries
+
+**Assignment Table Structure:**
+```sql
+Table: dhub-gd-analytics.eppo_input.gs_woowa_assignments
+Source: /Users/k.musina/Desktop/analytics/gs_woowa_eppo_assignments.sql
+Key columns:
+  - assignment_user_id (clientId from Perseus)
+  - variation ('control' or 'treatment')
+  - assignment_timestamp (when user was assigned)
+  - assignment_date (partition key, KST timezone)
+  - global_entity_id ('BM_KR')
+```
+
+**Join Logic:**
+```sql
+-- 1. Get assignments up to report date (respects D+1 lag)
+WHERE assignment_date <= report_date
+
+-- 2. Join with Perseus events on clientId
+ON e.client_id = a.assignment_user_id
+
+-- 3. Only events AFTER assignment
+WHERE e.eventTimestamp >= a.assignment_timestamp
+```
+
+**Important Differences from Platform Comparison:**
+- Uses **single report_date** (not start_date/end_date range)
+- **Must use yesterday's data** (D+1 lag for assignments)
+- **Excludes NULL_VERTICAL** (AB test only covers ALL, BAEMIN_DELIVERY)
+- **INNER JOIN** with assignments (only assigned users)
+- **Traffic split metric** (treatment_traffic_pct)
+
+**Documentation Added:**
+- `AB_TEST_QUICK_START.md` - Complete AB test guide
+- Updated `README.md` - AB test vs platform comparison decision tree
+- Updated workflow: `/Users/aybueke.kayaci/dh-pm-claude-skills/workflows/woowa-ab-test-analysis.md`
+
+---
+
+## Changes Made on May 28, 2026 (v2.0 - Data Cleanup)
 
 ### 1. ✅ CRITICAL: Exclude NULL Vertical (NOT Search Traffic)
 **What:** Changed vertical filter from:

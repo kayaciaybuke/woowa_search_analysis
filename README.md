@@ -2,15 +2,25 @@
 
 ## 📦 What's Included
 
-This folder contains everything you need to compare **Old Woowa Search** vs **Global Search** performance.
+This folder contains queries for **two types of analysis**:
 
-### Main Queries:
+### 🔵 Platform Comparison (Woowa vs Global Search)
+Compare old Woowa Search platform vs new Global Search platform.
+
+### 🟢 AB Test Analysis (Control vs Treatment)  
+Compare Control vs Treatment variations using Eppo assignment data during active AB test.
+
+---
+
+## Main Queries
+
+### Platform Comparison Queries
 
 1. **`overall_comparison_query.sql`** 🎯 **EXECUTIVE SUMMARY**
    - High-level aggregate view across ALL searches
-   - 3 rows (one per vertical)
+   - 3 rows (one per vertical: ALL, BAEMIN_DELIVERY, NULL_VERTICAL)
    - Perfect for weekly reports & trends
-   - Use this for: "How is AWS performing overall?"
+   - Use this for: "How is Global Search performing overall?"
 
 2. **`head_torso_tail_comparison_query.sql`** 📊 **TIER BREAKDOWN**
    - Performance by search frequency tier (Head/Torso/Tail)
@@ -24,54 +34,101 @@ This folder contains everything you need to compare **Old Woowa Search** vs **Gl
    - Deep-dive analysis
    - Use this for: "Which searches are underperforming?"
 
-### Guides & Documentation:
+### AB Test Queries (NEW!)
 
-4. **`OVERALL_COMPARISON_GUIDE.md`**
-   - How to use the overall query
-   - Interpreting aggregate metrics
-   - Example scenarios
+4. **`overall_comparison_query_ab_test.sql`** 🎯 **AB TEST SUMMARY**
+   - Control vs Treatment overall performance
+   - 2-3 rows (by vertical: ALL, BAEMIN_DELIVERY only)
+   - **Requires:** Yesterday's data (D+1 lag)
+   - Use this for: "How is the AB test performing?"
 
-5. **`HEAD_TORSO_TAIL_GUIDE.md`**
-   - Understanding Head/Torso/Tail performance
-   - Optimization strategies by tier
-   - Volume distribution analysis
+5. **`head_torso_tail_comparison_query_ab_test.sql`** 📊 **AB TEST BY TIER**
+   - Control vs Treatment by frequency tier
+   - 6-9 rows (2-3 verticals × 3 tiers)
+   - **Requires:** Yesterday's data (D+1 lag)
+   - Use this for: "Which tier wins in the AB test?"
 
-6. **`comprehensive_query_dimensions_guide.md`**
-   - Explains every metric in detail
-   - How to interpret results
-   - What good vs bad looks like
+6. **`comprehensive_comparison_query_ab_test.sql`** 🔍 **AB TEST DETAILED**
+   - Control vs Treatment per search query
+   - Hundreds/thousands of rows
+   - **Requires:** Yesterday's data (D+1 lag)
+   - Use this for: "Which queries are winning/losing?"
 
-7. **`query_output_columns_reference.md`**
-   - Quick reference for all output columns
-   - Column-by-column explanation
-   - Red flags to watch for
+**⚠️ AB Test Important:** All AB test queries require yesterday's data due to D+1 assignment lag. See `AB_TEST_QUICK_START.md` for details.
 
-8. **`woowa_search_query_guide.md`**
-   - Complete guide to the query package
-   - Sample queries
-   - Field documentation
+### Guides & Documentation
 
-9. **`CHANGELOG.md`**
-   - Latest changes and updates
-   - Why each change was made
+**AB Test:**
+- **`AB_TEST_QUICK_START.md`** 🆕
+  - AB test vs platform comparison decision guide
+  - D+1 lag requirement explained
+  - Assignment table structure
+  - Common mistakes to avoid
 
-8. **`sample_perseus_data.sql`**
-   - Query to explore your data first
-   - See what fields are available
+**Platform Comparison:**
+- **`OVERALL_COMPARISON_GUIDE.md`**
+  - How to use the overall query
+  - Interpreting aggregate metrics
+  - Example scenarios
+
+- **`HEAD_TORSO_TAIL_GUIDE.md`**
+  - Understanding Head/Torso/Tail performance
+  - Optimization strategies by tier
+  - Volume distribution analysis
+
+**Reference:**
+- **`comprehensive_query_dimensions_guide.md`**
+  - Explains every metric in detail
+  - How to interpret results
+  - What good vs bad looks like
+
+- **`query_output_columns_reference.md`**
+  - Quick reference for all output columns
+  - Column-by-column explanation
+  - Red flags to watch for
+
+- **`woowa_search_query_guide.md`**
+  - Complete guide to the query package
+  - Sample queries
+  - Field documentation
+
+- **`CHANGELOG.md`**
+  - Latest changes and updates
+  - Why each change was made
+
+- **`sample_perseus_data.sql`**
+  - Query to explore your data first
+  - See what fields are available
 
 ---
 
 ## 🤔 Which Query Should I Use?
 
-### Use **Overall Comparison Query** When:
+### First: Platform Comparison vs AB Test?
+
+**Use Platform Comparison queries when:**
+- ✅ Comparing Woowa Search vs Global Search platforms
+- ✅ Multi-day trends (7+ days)
+- ✅ Historical analysis before AB test launch
+- ✅ Includes NULL_VERTICAL traffic
+
+**Use AB Test queries when:**
+- ✅ Comparing Control vs Treatment during active AB test
+- ✅ Yesterday's data only (D+1 lag requirement)
+- ✅ Analyzing assigned users with exposure gating
+- ✅ Validating AB test traffic split
+
+### Platform Comparison Queries
+
+#### Use **Overall Comparison Query** When:
 - ✅ Creating weekly/monthly reports
 - ✅ Monitoring high-level trends
 - ✅ Presenting to executives
 - ✅ Quick health check
 - ✅ Tracking overall CTR/CVR changes
-- **Output:** 3 rows (one per vertical)
+- **Output:** 3 rows (ALL, BAEMIN_DELIVERY, NULL_VERTICAL)
 
-### Use **Head/Torso/Tail Query** When:
+#### Use **Head/Torso/Tail Query** When:
 - ✅ Understanding performance by search popularity
 - ✅ Strategic optimization planning
 - ✅ Identifying which tier needs attention
@@ -79,7 +136,7 @@ This folder contains everything you need to compare **Old Woowa Search** vs **Gl
 - ✅ Checking if Head searches perform best
 - **Output:** 9 rows (3 verticals × 3 tiers)
 
-### Use **Detailed Comparison Query** When:
+#### Use **Detailed Comparison Query** When:
 - ✅ Finding specific problematic search terms
 - ✅ Deep-dive analysis
 - ✅ Understanding which queries drive metrics
@@ -87,17 +144,52 @@ This folder contains everything you need to compare **Old Woowa Search** vs **Gl
 - ✅ Analyzing individual search behavior
 - **Output:** Hundreds/thousands of rows (one per search term)
 
-### Recommended Workflow:
+### AB Test Queries
+
+#### Use **AB Test Overall Query** When:
+- ✅ Daily AB test check-in
+- ✅ Validating traffic split (~50/50)
+- ✅ Quick Control vs Treatment comparison
+- ✅ Checking for significant differences
+- **Output:** 2-3 rows (ALL, BAEMIN_DELIVERY only)
+- **⚠️ Requirement:** Yesterday's data (D+1 lag)
+
+#### Use **AB Test Head/Torso/Tail Query** When:
+- ✅ Understanding which tier wins/loses
+- ✅ Strategic AB test insights
+- ✅ Checking if Head tier performs better
+- ✅ Tier-specific optimization planning
+- **Output:** 6-9 rows (2-3 verticals × 3 tiers)
+- **⚠️ Requirement:** Yesterday's data (D+1 lag)
+
+#### Use **AB Test Detailed Query** When:
+- ✅ Finding which queries win/lose
+- ✅ Deep-dive AB test analysis
+- ✅ Investigating specific search term issues
+- ✅ Validating treatment improvements
+- **Output:** Hundreds/thousands of rows (one per search query)
+- **⚠️ Requirement:** Yesterday's data (D+1 lag)
+
+### Recommended Workflows
+
+**Platform Comparison:**
 1. **Start with Overall** → Is there an issue? (e.g., "CTR dropped 5%")
 2. **Run Head/Torso/Tail** → Which tier has the issue? (e.g., "Head CTR dropped")
 3. **Use Detailed** → Which specific searches? (e.g., "pizza, chicken, burger")
 4. **Export all three** → Overall for exec summary, H/T/T for strategy, Detailed for action items
 
+**AB Test:**
+1. **Start with Overall AB Test** → Is Treatment winning? (e.g., "+8% CTR, significant")
+2. **Check traffic split** → Is it ~50/50? (e.g., "50.2% treatment traffic")
+3. **Run Head/Torso/Tail AB Test** → Which tier wins? (e.g., "Head +12%, Torso +5%")
+4. **Use Detailed AB Test** → Which queries win/lose? (e.g., "Top 10 wins, Top 10 losses")
+5. **Validate before shipping** → Ensure consistent improvements across tiers
+
 ---
 
 ## 🚀 Quick Start
 
-### Option A: Overall Summary (Recommended First)
+### Option A: Platform Comparison (Woowa vs Global Search)
 
 **Step 1: Open the Overall Query**
 ```bash
@@ -111,41 +203,76 @@ DECLARE end_date DATE DEFAULT CURRENT_DATE() - 1;    -- Yesterday
 ```
 
 **Step 3: Run in BigQuery**
-- You'll get 3 rows (one per vertical)
+- You'll get 3 rows (ALL, BAEMIN_DELIVERY, NULL_VERTICAL)
 - Perfect for weekly reports!
 
----
-
-### Option B: Detailed Analysis (When You Need Deep Dive)
-
-**Step 1: Open the Detailed Query**
-```bash
-open ~/woowa_search_analysis/comprehensive_comparison_query.sql
-```
-
-**Step 2: Change Dates (Same as above)**
-
-**Step 3: Run in BigQuery**
-- You'll get hundreds/thousands of rows
-- One row per search term
-- Filter for high-frequency searches first
-
----
-
-### Date Options:
+**Date Options:**
 ```sql
 -- For yesterday (recommended - complete data):
 DECLARE start_date DATE DEFAULT CURRENT_DATE() - 1;
 DECLARE end_date DATE DEFAULT CURRENT_DATE() - 1;
 
--- For today (may be incomplete):
-DECLARE start_date DATE DEFAULT CURRENT_DATE();
-DECLARE end_date DATE DEFAULT CURRENT_DATE();
-
 -- For last 7 days:
 DECLARE start_date DATE DEFAULT CURRENT_DATE() - 7;
 DECLARE end_date DATE DEFAULT CURRENT_DATE() - 1;
+
+-- For specific date range:
+DECLARE start_date DATE DEFAULT DATE '2026-05-20';
+DECLARE end_date DATE DEFAULT DATE '2026-05-26';
 ```
+
+---
+
+### Option B: AB Test Analysis (Control vs Treatment)
+
+**⚠️ IMPORTANT: Must use yesterday's data (D+1 lag)**
+
+**Step 1: Open the AB Test Overall Query**
+```bash
+open ~/woowa_search_analysis/overall_comparison_query_ab_test.sql
+```
+
+**Step 2: Verify Date (Line 6)**
+```sql
+DECLARE report_date DATE DEFAULT CURRENT_DATE() - 1;  -- Always yesterday!
+```
+
+**Step 3: Run in BigQuery**
+- You'll get 2-3 rows (ALL, BAEMIN_DELIVERY only)
+- Check `treatment_traffic_pct` (should be ~50%)
+- Perfect for daily AB test check-ins!
+
+**Date Options for AB Test:**
+```sql
+-- ✅ CORRECT: Yesterday (D+1 lag)
+DECLARE report_date DATE DEFAULT CURRENT_DATE() - 1;
+
+-- ✅ CORRECT: Specific past date
+DECLARE report_date DATE DEFAULT DATE '2026-05-27';
+
+-- ❌ WRONG: Today (incomplete assignments)
+DECLARE report_date DATE DEFAULT CURRENT_DATE();
+```
+
+**📖 For more AB test details:** See `AB_TEST_QUICK_START.md`
+
+---
+
+### Option C: Detailed Analysis (Deep Dive)
+
+**For Platform Comparison:**
+```bash
+open ~/woowa_search_analysis/comprehensive_comparison_query.sql
+```
+
+**For AB Test:**
+```bash
+open ~/woowa_search_analysis/comprehensive_comparison_query_ab_test.sql
+```
+
+- You'll get hundreds/thousands of rows
+- One row per search term/query
+- Filter for high-volume searches first
 
 ---
 
@@ -252,7 +379,23 @@ All files are in: `~/woowa_search_analysis/`
 ---
 
 ## 📅 Last Updated
-May 27, 2026
+May 28, 2026
 
 ## 🏷️ Version
-v2.0 - Updated with NULL vertical support and AWS ≥5 filter
+v3.0 - Added AB Test queries with Eppo assignment integration
+- ✅ AB Test: Control vs Treatment comparison
+- ✅ D+1 lag support for assignment data
+- ✅ Unified tier calculation across variations
+- ✅ Traffic split validation
+- ✅ Platform Comparison: Woowa vs Global Search (existing)
+
+## 🔗 Related Resources
+
+**Assignment Table Script:**
+`/Users/k.musina/Desktop/analytics/gs_woowa_eppo_assignments.sql`
+
+**Workflow Documentation:**
+`/Users/aybueke.kayaci/dh-pm-claude-skills/workflows/woowa-ab-test-analysis.md`
+
+**Assignment Table:** 
+`dhub-gd-analytics.eppo_input.gs_woowa_assignments`

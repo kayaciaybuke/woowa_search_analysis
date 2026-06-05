@@ -9,6 +9,7 @@ DECLARE comparison_date DATE DEFAULT CURRENT_DATE() - 7;  -- Week before for tre
 WITH events AS (
   SELECT
     DATE(eventTimestamp) AS partition_date,
+    eventTimestamp,
     globalEntityId       AS global_entity_id,
     sessionId            AS session_key,
     JSON_VALUE(eventVariablesJson, '$.searchTrackingId') AS search_request_id,
@@ -25,16 +26,28 @@ WITH events AS (
     AND eventAction IN ('shop_list.updated','shop.clicked','shop_list.expanded','transaction')
 ),
 
--- Get correct shop positions from shop_list.updated baseline
+-- Get correct shop positions from shop_list.updated + shop_list.expanded baseline
+-- Note: shop_list.expanded can have different search_request_id, so we group by session + search_term
 shop_positions AS (
   SELECT
-    search_request_id,
+    session_key,
+    search_term,
     shop_id,
-    position as correct_position
-  FROM events,
+    -- Each shop_list event (updated=0, expanded=1,2,3...) starts from position 0
+    -- Actual position = (page_number * 25) + position_in_page
+    (page_number * 25) + position as correct_position
+  FROM (
+    SELECT
+      session_key,
+      search_term,
+      shops_ids,
+      ROW_NUMBER() OVER (PARTITION BY session_key, search_term ORDER BY eventTimestamp) - 1 AS page_number
+    FROM events
+    WHERE event_name IN ('shop_list.updated', 'shop_list.expanded')
+      AND shops_ids IS NOT NULL
+      AND search_term IS NOT NULL
+  ),
   UNNEST(SPLIT(shops_ids, ',')) as shop_id WITH OFFSET as position
-  WHERE event_name = 'shop_list.updated'
-    AND shops_ids IS NOT NULL
 ),
 
 -- Get clicked shops with corrected positions
@@ -44,10 +57,12 @@ clicks_with_positions AS (
     e.global_entity_id,
     e.session_key,
     e.search_request_id,
+    e.search_term,
     sp.correct_position
   FROM events e
   INNER JOIN shop_positions sp
-    ON e.search_request_id = sp.search_request_id
+    ON e.session_key = sp.session_key
+    AND e.search_term = sp.search_term
     AND e.shop_id = sp.shop_id
   WHERE e.event_name = 'shop.clicked'
 ),

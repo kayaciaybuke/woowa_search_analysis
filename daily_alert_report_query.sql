@@ -15,13 +15,41 @@ WITH events AS (
     eventAction AS event_name,
     eventOrigin AS event_origin,
     SAFE_CAST(JSON_VALUE(eventVariablesJson, '$.shopQuantityTotal') AS INT64) AS shop_quantity_total,
-    SAFE_CAST(JSON_VALUE(eventVariablesJson, '$.shopPosition') AS INT64) AS shop_position,
     JSON_VALUE(eventVariablesJson, '$.searchVerticalName') AS search_vertical,
     JSON_VALUE(eventVariablesJson, '$.searchTerm') AS search_term,
-    JSON_VALUE(eventVariablesJson, '$.shopListTrigger') AS shop_list_trigger
+    JSON_VALUE(eventVariablesJson, '$.shopListTrigger') AS shop_list_trigger,
+    JSON_VALUE(eventVariablesJson, '$.shopsIds') AS shops_ids,
+    JSON_VALUE(eventVariablesJson, '$.shopId') AS shop_id
   FROM `fulfillment-dwh-production.curated_data_shared_data_stream_perseus.baemin_korea_perseus`
   WHERE DATE(eventTimestamp) = report_date
     AND eventAction IN ('shop_list.updated','shop.clicked','shop_list.expanded','transaction')
+),
+
+-- Get correct shop positions from shop_list.updated baseline
+shop_positions AS (
+  SELECT
+    search_request_id,
+    shop_id,
+    position as correct_position
+  FROM events,
+  UNNEST(SPLIT(shops_ids, ',')) as shop_id WITH OFFSET as position
+  WHERE event_name = 'shop_list.updated'
+    AND shops_ids IS NOT NULL
+),
+
+-- Get clicked shops with corrected positions
+clicks_with_positions AS (
+  SELECT
+    e.partition_date,
+    e.global_entity_id,
+    e.session_key,
+    e.search_request_id,
+    sp.correct_position
+  FROM events e
+  INNER JOIN shop_positions sp
+    ON e.search_request_id = sp.search_request_id
+    AND e.shop_id = sp.shop_id
+  WHERE e.event_name = 'shop.clicked'
 ),
 
 search_grain AS (
@@ -39,7 +67,7 @@ search_grain AS (
     MAX(IF(event_name='shop_list.updated', shop_quantity_total, NULL)) AS shop_quantity_total,
     COUNTIF(event_name='shop.clicked') > 0 AS had_click,
     COUNTIF(event_name='transaction') > 0 AS had_order,
-    MIN(IF(event_name='shop.clicked', shop_position, NULL)) AS first_click_rank
+    (SELECT MIN(correct_position) FROM clicks_with_positions cwp WHERE cwp.search_request_id = events.search_request_id) AS first_click_rank
   FROM events
   INNER JOIN `search-restaurant-stats-9826.backendtracking.vendor-v1` s
     ON s.global_entity_id = events.global_entity_id
@@ -62,7 +90,7 @@ search_grain AS (
     MAX(IF(event_name='shop_list.updated', shop_quantity_total, NULL)) AS shop_quantity_total,
     COUNTIF(event_name='shop.clicked') > 0 AS had_click,
     COUNTIF(event_name='transaction') > 0 AS had_order,
-    MIN(IF(event_name='shop.clicked', shop_position, NULL)) AS first_click_rank
+    (SELECT MIN(correct_position) FROM clicks_with_positions cwp WHERE cwp.search_request_id = events.search_request_id) AS first_click_rank
   FROM events
   WHERE NOT EXISTS (
     SELECT 1

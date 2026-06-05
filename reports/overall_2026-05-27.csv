@@ -1,0 +1,3 @@
+report_date,search_vertical,control_searches,treatment_searches,control_sessions,treatment_sessions,control_ctr,treatment_ctr,control_cvr,treatment_cvr,ctr_pct_change,cvr_pct_change,ctr_statistically_significant,cvr_statistically_significant,control_avg_click_rank,treatment_avg_click_rank,avg_click_rank_diff,control_zrr,treatment_zrr,zrr_pct_change,control_searches_per_session,treatment_searches_per_session,searches_per_session_pct_change,treatment_traffic_pct
+2026-05-27,ALL,27606,27290,16623,16741,0.5953,0.5971,0.1459,0.1495,0.3,2.47,No,No,0.49,0.52,0.03,0.0045,7.0E-4,-84.44,1.66,1.63,-1.81,49.7
+2026-05-27,BAEMIN_DELIVERY,17272,17314,8421,8634,0.641,0.6412,0.1516,0.1595,0.03,5.21,No,Yes,2.37,2.26,-0.11,0.0104,0.0023,-77.88,2.05,2.01,-1.95,50.1

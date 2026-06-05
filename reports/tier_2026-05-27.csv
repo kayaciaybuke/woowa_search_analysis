@@ -1,0 +1,7 @@
+report_date,search_vertical,frequency_tier,tier_definition,control_searches,treatment_searches,control_unique_queries,treatment_unique_queries,control_ctr,treatment_ctr,control_cvr,treatment_cvr,ctr_pct_change,cvr_pct_change,ctr_stat_sig,cvr_stat_sig,control_avg_click_rank,treatment_avg_click_rank,control_zrr,treatment_zrr,zrr_pct_change,treatment_traffic_pct
+2026-05-27,ALL,Head,Top 50% of combined volume,13776,13639,186,186,0.5951,0.586,0.1609,0.1594,-1.53,-0.93,No,No,0.67,0.68,0.0,1.0E-4,,49.8
+2026-05-27,ALL,Torso,Next 30% of combined volume (50-80%),8342,8140,2026,2022,0.6174,0.6219,0.1328,0.1371,0.73,3.24,No,No,0.47,0.49,0.0034,1.0E-4,-97.06,49.4
+2026-05-27,ALL,Tail,Bottom 20% of combined volume (80-100%),5460,5511,4941,4975,0.5601,0.5881,0.128,0.1432,5.0,11.87,Yes,Yes,0.23,0.34,0.0176,0.0029,-83.52,50.2
+2026-05-27,BAEMIN_DELIVERY,Head,Top 50% of combined volume,8795,8494,175,175,0.6639,0.6672,0.1778,0.1874,0.5,5.4,No,No,2.62,2.65,0.0023,0.0012,-47.83,49.1
+2026-05-27,BAEMIN_DELIVERY,Torso,Next 30% of combined volume (50-80%),5201,5161,1256,1234,0.641,0.6543,0.129,0.1461,2.07,13.26,No,Yes,2.36,2.09,0.0071,4.0E-4,-94.37,49.8
+2026-05-27,BAEMIN_DELIVERY,Tail,Bottom 20% of combined volume (80-100%),3276,3659,2919,3241,0.5794,0.5622,0.1172,0.1137,-2.97,-2.99,No,No,1.24,1.18,0.0372,0.0077,-79.3,52.8

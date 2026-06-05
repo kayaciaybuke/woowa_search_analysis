@@ -1,0 +1,84 @@
+To: aybueke.kayaci@deliveryhero.com
+Subject: Woowa AB Test Report - 2026-06-01
+
+======================================================================
+WOOWA AB TEST DAILY REPORT
+Report Date: 2026-06-01
+======================================================================
+
+📊 OVERALL RESULTS
+----------------------------------------------------------------------
+
+🔍 ALL Tab:
+   Traffic Split: 49.8% Treatment
+   Control Searches: 198,075
+   Treatment Searches: 196,392
+
+   CTR (Click-Through Rate):
+      Control:   61.40%
+      Treatment: 61.21%
+      Change:    -0.3% — (Not Significant)
+
+   CVR (Conversion Rate):
+      Control:   14.96%
+      Treatment: 15.14%
+      Change:    +1.2% — (Not Significant)
+
+
+🔍 BAEMIN_DELIVERY Tab:
+   Traffic Split: 50.4% Treatment
+   Control Searches: 127,353
+   Treatment Searches: 129,464
+
+   CTR (Click-Through Rate):
+      Control:   64.35%
+      Treatment: 64.43%
+      Change:    +0.1% — (Not Significant)
+
+   CVR (Conversion Rate):
+      Control:   15.61%
+      Treatment: 15.58%
+      Change:    -0.2% — (Not Significant)
+
+
+📈 TIER BREAKDOWN (Head/Torso/Tail)
+----------------------------------------------------------------------
+
+ALL - Head:
+   Unique Queries: 442
+   CTR Change: -1.1% (Sig)
+   CVR Change: -1.3% 
+
+ALL - Torso:
+   Unique Queries: 9,135
+   CTR Change: -0.1% 
+   CVR Change: +3.6% (Sig)
+
+ALL - Tail:
+   Unique Queries: 56,961
+   CTR Change: +2.0% (Sig)
+   CVR Change: +6.5% (Sig)
+
+BAEMIN_DELIVERY - Head:
+   Unique Queries: 378
+   CTR Change: +0.6% 
+   CVR Change: +1.6% 
+
+BAEMIN_DELIVERY - Torso:
+   Unique Queries: 4,853
+   CTR Change: +2.3% (Sig)
+   CVR Change: +2.1% 
+
+BAEMIN_DELIVERY - Tail:
+   Unique Queries: 36,129
+   CTR Change: -3.0% (Sig)
+   CVR Change: -6.5% (Sig)
+
+======================================================================
+📝 Key Insights:
+
+• No statistically significant changes detected
+
+======================================================================
+
+Generated at: 2026-06-02 12:02:18

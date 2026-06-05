@@ -1,0 +1,84 @@
+To: aybueke.kayaci@deliveryhero.com
+Subject: Woowa AB Test Report - 2026-05-30
+
+======================================================================
+WOOWA AB TEST DAILY REPORT
+Report Date: 2026-05-30
+======================================================================
+
+📊 OVERALL RESULTS
+----------------------------------------------------------------------
+
+🔍 ALL Tab:
+   Traffic Split: 50.1% Treatment
+   Control Searches: 120,310
+   Treatment Searches: 120,623
+
+   CTR (Click-Through Rate):
+      Control:   60.13%
+      Treatment: 60.19%
+      Change:    +0.1% — (Not Significant)
+
+   CVR (Conversion Rate):
+      Control:   17.12%
+      Treatment: 17.19%
+      Change:    +0.4% — (Not Significant)
+
+
+🔍 BAEMIN_DELIVERY Tab:
+   Traffic Split: 50.5% Treatment
+   Control Searches: 72,704
+   Treatment Searches: 74,223
+
+   CTR (Click-Through Rate):
+      Control:   63.67%
+      Treatment: 63.64%
+      Change:    -0.1% — (Not Significant)
+
+   CVR (Conversion Rate):
+      Control:   17.32%
+      Treatment: 17.24%
+      Change:    -0.5% — (Not Significant)
+
+
+📈 TIER BREAKDOWN (Head/Torso/Tail)
+----------------------------------------------------------------------
+
+ALL - Head:
+   Unique Queries: 326
+   CTR Change: -1.2% (Sig)
+   CVR Change: -0.7% 
+
+ALL - Torso:
+   Unique Queries: 6,304
+   CTR Change: +0.9% 
+   CVR Change: +2.1% 
+
+ALL - Tail:
+   Unique Queries: 36,395
+   CTR Change: +2.6% (Sig)
+   CVR Change: +1.1% 
+
+BAEMIN_DELIVERY - Head:
+   Unique Queries: 336
+   CTR Change: +1.3% (Sig)
+   CVR Change: +2.2% 
+
+BAEMIN_DELIVERY - Torso:
+   Unique Queries: 4,012
+   CTR Change: -0.0% 
+   CVR Change: -0.9% 
+
+BAEMIN_DELIVERY - Tail:
+   Unique Queries: 22,326
+   CTR Change: -2.3% (Sig)
+   CVR Change: -5.3% 
+
+======================================================================
+📝 Key Insights:
+
+• No statistically significant changes detected
+
+======================================================================
+
+Generated at: 2026-05-31 15:08:50

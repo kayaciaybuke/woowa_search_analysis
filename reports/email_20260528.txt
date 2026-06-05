@@ -1,0 +1,84 @@
+To: aybueke.kayaci@example.com
+Subject: Woowa AB Test Report - 2026-05-27
+
+======================================================================
+WOOWA AB TEST DAILY REPORT
+Report Date: 2026-05-27
+======================================================================
+
+📊 OVERALL RESULTS
+----------------------------------------------------------------------
+
+🔍 ALL Tab:
+   Traffic Split: 49.7% Treatment
+   Control Searches: 27,606
+   Treatment Searches: 27,290
+
+   CTR (Click-Through Rate):
+      Control:   59.53%
+      Treatment: 59.71%
+      Change:    +0.3% — (Not Significant)
+
+   CVR (Conversion Rate):
+      Control:   14.59%
+      Treatment: 14.95%
+      Change:    +2.5% — (Not Significant)
+
+
+🔍 BAEMIN_DELIVERY Tab:
+   Traffic Split: 50.1% Treatment
+   Control Searches: 17,272
+   Treatment Searches: 17,314
+
+   CTR (Click-Through Rate):
+      Control:   64.10%
+      Treatment: 64.12%
+      Change:    +0.0% — (Not Significant)
+
+   CVR (Conversion Rate):
+      Control:   15.16%
+      Treatment: 15.95%
+      Change:    +5.2% ✅ (Significant)
+
+
+📈 TIER BREAKDOWN (Head/Torso/Tail)
+----------------------------------------------------------------------
+
+ALL - Head:
+   Unique Queries: 372
+   CTR Change: -1.5% 
+   CVR Change: -0.9% 
+
+ALL - Torso:
+   Unique Queries: 4,048
+   CTR Change: +0.7% 
+   CVR Change: +3.2% 
+
+ALL - Tail:
+   Unique Queries: 9,916
+   CTR Change: +5.0% (Sig)
+   CVR Change: +11.9% (Sig)
+
+BAEMIN_DELIVERY - Head:
+   Unique Queries: 350
+   CTR Change: +0.5% 
+   CVR Change: +5.4% 
+
+BAEMIN_DELIVERY - Torso:
+   Unique Queries: 2,490
+   CTR Change: +2.1% 
+   CVR Change: +13.3% (Sig)
+
+BAEMIN_DELIVERY - Tail:
+   Unique Queries: 6,160
+   CTR Change: -3.0% 
+   CVR Change: -3.0% 
+
+======================================================================
+📝 Key Insights:
+
+• BAEMIN_DELIVERY: CVR improved by 5.2% (significant)
+
+======================================================================
+
+Generated at: 2026-05-28 15:03:16

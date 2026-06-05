@@ -1,0 +1,85 @@
+To: aybueke.kayaci@deliveryhero.com
+Subject: Woowa AB Test Report - 2026-05-31
+
+======================================================================
+WOOWA AB TEST DAILY REPORT
+Report Date: 2026-05-31
+======================================================================
+
+📊 OVERALL RESULTS
+----------------------------------------------------------------------
+
+🔍 ALL Tab:
+   Traffic Split: 49.3% Treatment
+   Control Searches: 62,821
+   Treatment Searches: 61,195
+
+   CTR (Click-Through Rate):
+      Control:   58.49%
+      Treatment: 59.08%
+      Change:    +1.0% ✅ (Significant)
+
+   CVR (Conversion Rate):
+      Control:   14.64%
+      Treatment: 15.19%
+      Change:    +3.8% ✅ (Significant)
+
+
+🔍 BAEMIN_DELIVERY Tab:
+   Traffic Split: 49.4% Treatment
+   Control Searches: 42,992
+   Treatment Searches: 41,965
+
+   CTR (Click-Through Rate):
+      Control:   64.74%
+      Treatment: 64.65%
+      Change:    -0.1% — (Not Significant)
+
+   CVR (Conversion Rate):
+      Control:   15.50%
+      Treatment: 15.91%
+      Change:    +2.6% — (Not Significant)
+
+
+📈 TIER BREAKDOWN (Head/Torso/Tail)
+----------------------------------------------------------------------
+
+ALL - Head:
+   Unique Queries: 366
+   CTR Change: +1.0% 
+   CVR Change: +2.1% 
+
+ALL - Torso:
+   Unique Queries: 5,321
+   CTR Change: +1.2% 
+   CVR Change: +7.5% (Sig)
+
+ALL - Tail:
+   Unique Queries: 20,337
+   CTR Change: +1.5% 
+   CVR Change: +3.0% 
+
+BAEMIN_DELIVERY - Head:
+   Unique Queries: 342
+   CTR Change: +0.7% 
+   CVR Change: +4.0% 
+
+BAEMIN_DELIVERY - Torso:
+   Unique Queries: 3,212
+   CTR Change: +0.3% 
+   CVR Change: -0.2% 
+
+BAEMIN_DELIVERY - Tail:
+   Unique Queries: 13,446
+   CTR Change: -2.5% 
+   CVR Change: +4.1% 
+
+======================================================================
+📝 Key Insights:
+
+• ALL: CTR improved by 1.0% (significant)
+• ALL: CVR improved by 3.8% (significant)
+
+======================================================================
+
+Generated at: 2026-06-01 06:27:07

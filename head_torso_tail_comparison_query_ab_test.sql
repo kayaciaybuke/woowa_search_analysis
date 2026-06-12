@@ -2,9 +2,10 @@
 -- HEAD/TORSO/TAIL COMPARISON - AB TEST VERSION
 -- Compares Control vs Treatment by query frequency tier using Eppo assignments
 -- Unified tiers based on combined (Control + Treatment) volume
--- Uses YESTERDAY's data (D+1 lag for assignments)
+-- Date range: May 30, 2026 to Yesterday (D+1 lag for assignments)
 -- =================================================================
-DECLARE report_date DATE DEFAULT CURRENT_DATE() - 1;  -- Yesterday (D+1 lag)
+DECLARE start_date DATE DEFAULT '2026-05-30';  -- AB test start date
+DECLARE end_date DATE DEFAULT CURRENT_DATE() - 1;  -- Yesterday (D+1 lag)
 -- =================================================================
 
 WITH assignments AS (
@@ -15,7 +16,7 @@ WITH assignments AS (
     assignment_date,
     global_entity_id
   FROM `dhub-gd-analytics.eppo_input.gs_woowa_assignments`
-  WHERE assignment_date <= report_date  -- Assigned by yesterday
+  WHERE assignment_date <= end_date  -- Assigned by end date
     AND variation IN ('A', 'B')  -- A=Control, B=Treatment; exclude C=Non-participants
 ),
 
@@ -34,7 +35,7 @@ events AS (
     JSON_VALUE(eventVariablesJson, '$.shopsIds') AS shops_ids,
     JSON_VALUE(eventVariablesJson, '$.shopId') AS shop_id
   FROM `fulfillment-dwh-production.curated_data_shared_data_stream_perseus.baemin_korea_perseus`
-  WHERE DATE(eventTimestamp) = report_date
+  WHERE DATE(eventTimestamp) BETWEEN start_date AND end_date
     AND eventAction IN ('shop_list.updated','shop.clicked','shop_list.expanded','transaction')
     AND clientId IS NOT NULL
 ),
@@ -56,19 +57,27 @@ shop_positions AS (
   SELECT
     search_request_id,
     shop_id,
-    -- Each shop_list event (updated=0, expanded=1,2,3...) starts from position 0
-    -- Actual position = (page_number * 25) + position_in_page
-    (page_number * 25) + position as correct_position
+    -- Use cumulative count of actual shops per page (not hardcoded 25)
+    -- Add +1 for 1-based ranking (position 1 = first result)
+    -- MIN handles rare duplicate shops in BAEMIN_DELIVERY (0.8% of cases)
+    MIN(page_offset + position + 1) AS correct_position
   FROM (
     SELECT
       search_request_id,
       shops_ids,
-      ROW_NUMBER() OVER (PARTITION BY search_request_id ORDER BY eventTimestamp) - 1 AS page_number
+      -- Calculate cumulative count of shops from all previous pages
+      COALESCE(
+        SUM(ARRAY_LENGTH(SPLIT(shops_ids, ',')))
+          OVER (PARTITION BY search_request_id ORDER BY eventTimestamp
+                ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING),
+        0
+      ) AS page_offset
     FROM assigned_events
     WHERE event_name IN ('shop_list.updated', 'shop_list.expanded')
       AND shops_ids IS NOT NULL
   ),
-  UNNEST(SPLIT(shops_ids, ',')) as shop_id WITH OFFSET as position
+  UNNEST(SPLIT(shops_ids, ',')) AS shop_id WITH OFFSET AS position
+  GROUP BY search_request_id, shop_id
 ),
 
 -- Get clicked shops with corrected positions
@@ -261,7 +270,7 @@ tier_comparison AS (
 
 -- Final output
 SELECT
-  FORMAT_DATE('%Y-%m-%d', report_date) AS report_date,
+  CONCAT(FORMAT_DATE('%Y-%m-%d', start_date), ' to ', FORMAT_DATE('%Y-%m-%d', end_date)) AS date_range,
   search_vertical,
   frequency_tier,
   tier_definition,

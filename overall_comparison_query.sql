@@ -2,8 +2,8 @@
 -- OVERALL COMPARISON QUERY - ALL SEARCHES AGGREGATED
 -- High-level performance comparison across all search queries
 -- =================================================================
-DECLARE start_date DATE DEFAULT CURRENT_DATE();  -- Today
-DECLARE end_date DATE DEFAULT CURRENT_DATE();    -- Today
+DECLARE start_date DATE DEFAULT '2026-05-30';  -- AB test start date
+DECLARE end_date DATE DEFAULT CURRENT_DATE() - 1;  -- Yesterday (D+1 lag)
 -- For multiple days: CURRENT_DATE() - 7 to CURRENT_DATE() - 1
 -- =================================================================
 
@@ -36,19 +36,27 @@ shop_positions AS (
   SELECT
     search_request_id,
     shop_id,
-    -- Each shop_list event (updated=0, expanded=1,2,3...) starts from position 0
-    -- Actual position = (page_number * 25) + position_in_page
-    (page_number * 25) + position as correct_position
+    -- Use cumulative count of actual shops per page (not hardcoded 25)
+    -- Add +1 for 1-based ranking (position 1 = first result)
+    -- MIN handles rare duplicate shops in BAEMIN_DELIVERY (0.8% of cases)
+    MIN(page_offset + position + 1) AS correct_position
   FROM (
     SELECT
       search_request_id,
       shops_ids,
-      ROW_NUMBER() OVER (PARTITION BY search_request_id ORDER BY eventTimestamp) - 1 AS page_number
+      -- Calculate cumulative count of shops from all previous pages
+      COALESCE(
+        SUM(ARRAY_LENGTH(SPLIT(shops_ids, ',')))
+          OVER (PARTITION BY search_request_id ORDER BY eventTimestamp
+                ROWS BETWEEN UNBOUNDED PRECEDING AND 1 PRECEDING),
+        0
+      ) AS page_offset
     FROM events
     WHERE event_name IN ('shop_list.updated', 'shop_list.expanded')
       AND shops_ids IS NOT NULL
   ),
-  UNNEST(SPLIT(shops_ids, ',')) as shop_id WITH OFFSET as position
+  UNNEST(SPLIT(shops_ids, ',')) AS shop_id WITH OFFSET AS position
+  GROUP BY search_request_id, shop_id
 ),
 
 -- Get clicked shops with corrected positions

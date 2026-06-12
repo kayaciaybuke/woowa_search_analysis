@@ -100,6 +100,14 @@ Compare Control vs Treatment variations using Eppo assignment data during active
   - Query to explore your data first
   - See what fields are available
 
+**Technical Details:**
+- **`CLICK_POSITION_TRACKING_HACK.md`** ⚠️ **IMPORTANT**
+  - Why click positions reset by delivery status
+  - How we calculate accurate positions using `shopsIds`
+  - Pagination handling and known issues
+  - Open questions for tracking team
+  - **Read this if you're modifying position calculations**
+
 ---
 
 ## 🤔 Which Query Should I Use?

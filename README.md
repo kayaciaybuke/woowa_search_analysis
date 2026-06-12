@@ -54,6 +54,12 @@ Compare Control vs Treatment variations using Eppo assignment data during active
    - **Requires:** Yesterday's data (D+1 lag)
    - Use this for: "Which queries are winning/losing?"
 
+7. **`query_classification_breakdown_ab_test.sql`** 🏷️ **QUERY CLASSIFICATION BREAKDOWN**
+   - Control vs Treatment by Vertical × Tier × Query Classification
+   - Last 2 weeks of data
+   - Classifications: restaurant, item, cuisine, unclassified
+   - Use this for: "How do different query types perform in AB test?"
+
 **⚠️ AB Test Important:** All AB test queries require yesterday's data due to D+1 assignment lag. See `AB_TEST_QUICK_START.md` for details.
 
 ### Guides & Documentation

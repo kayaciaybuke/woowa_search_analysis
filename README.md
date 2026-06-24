@@ -1,100 +1,82 @@
-# Woowa Search Analysis - Query Package
+# Woowa Search Analysis - AB Test Query Package
 
 ## 📦 What's Included
 
-This folder contains queries for **two types of analysis**:
-
-### 🔵 Platform Comparison (Woowa vs Global Search)
-Compare old Woowa Search platform vs new Global Search platform.
-
-### 🟢 AB Test Analysis (Control vs Treatment)  
-Compare Control vs Treatment variations using Eppo assignment data during active AB test.
+This folder contains queries for **AB Test Analysis** comparing Control (A) vs Treatment (B) variations during the Woowa AB test period (May 30 - June 17, 2026).
 
 ---
 
 ## Main Queries
 
-### Platform Comparison Queries
+### AB Test Analysis Queries
 
-1. **`overall_comparison_query.sql`** 🎯 **EXECUTIVE SUMMARY**
-   - High-level aggregate view across ALL searches
-   - 3 rows (one per vertical: ALL, BAEMIN_DELIVERY, NULL_VERTICAL)
-   - Perfect for weekly reports & trends
-   - Use this for: "How is Global Search performing overall?"
-
-2. **`head_torso_tail_comparison_query.sql`** 📊 **TIER BREAKDOWN**
-   - Performance by search frequency tier (Head/Torso/Tail)
-   - 9 rows (3 verticals × 3 tiers)
-   - Strategic optimization insights
-   - Use this for: "Which tier needs attention?"
-
-3. **`comprehensive_comparison_query.sql`** 🔍 **DETAILED ANALYSIS**
-   - Per-search-term breakdown
-   - Hundreds/thousands of rows
-   - Deep-dive analysis
-   - Use this for: "Which searches are underperforming?"
-
-### AB Test Queries (NEW!)
-
-4. **`overall_comparison_query_ab_test.sql`** 🎯 **AB TEST SUMMARY**
+1. **`overall_comparison_query_ab_test.sql`** 🎯 **AB TEST SUMMARY**
    - Control vs Treatment overall performance
    - 2-3 rows (by vertical: ALL, BAEMIN_DELIVERY only)
-   - **Requires:** Yesterday's data (D+1 lag)
+   - Date range: May 30 - June 17, 2026 (inclusive)
    - Use this for: "How is the AB test performing?"
 
-5. **`head_torso_tail_comparison_query_ab_test.sql`** 📊 **AB TEST BY TIER**
-   - Control vs Treatment by frequency tier
+2. **`head_torso_tail_comparison_query_ab_test.sql`** 📊 **AB TEST BY TIER**
+   - Control vs Treatment by frequency tier (Head/Torso/Tail)
    - 6-9 rows (2-3 verticals × 3 tiers)
-   - **Requires:** Yesterday's data (D+1 lag)
+   - Date range: May 30 - June 17, 2026 (inclusive)
    - Use this for: "Which tier wins in the AB test?"
 
-6. **`comprehensive_comparison_query_ab_test.sql`** 🔍 **AB TEST DETAILED**
+3. **`comprehensive_comparison_query_ab_test.sql`** 🔍 **AB TEST DETAILED**
    - Control vs Treatment per search query
    - Hundreds/thousands of rows
-   - **Requires:** Yesterday's data (D+1 lag)
+   - Date range: May 30 - June 17, 2026 (inclusive)
    - Use this for: "Which queries are winning/losing?"
 
-7. **`query_classification_breakdown_ab_test.sql`** 🏷️ **QUERY CLASSIFICATION BREAKDOWN**
+4. **`query_classification_breakdown_ab_test.sql`** 🏷️ **QUERY CLASSIFICATION BREAKDOWN**
    - Control vs Treatment by Vertical × Tier × Query Classification
    - Date range: May 30 - June 17, 2026 (inclusive)
    - Classifications: restaurant, item, cuisine, unclassified
    - Use this for: "How do different query types perform in AB test?"
 
-8. **`exact_match_analysis_queries.sql`** 🎯 **EXACT MATCH ANALYSIS** (NEW!)
+5. **`exact_match_analysis_queries.sql`** 🎯 **EXACT MATCH ANALYSIS**
    - Restaurant query performance by exact match positioning
    - Order source tracking (exact match vendor vs others)
    - Last-click attribution model
+   - Date range: May 30 - June 17, 2026 (inclusive)
    - Use this for: "How does exact match positioning affect conversion?"
 
-**⚠️ AB Test Important:** All AB test queries use a fixed date range (May 30 - June 17, 2026) for consistent analysis. See `AB_TEST_QUICK_START.md` for details.
+**⚠️ Important:** All AB test queries use a fixed date range (May 30 - June 17, 2026) for consistent analysis.
 
-### Guides & Documentation
+---
 
-**AB Test:**
-- **`AB_TEST_QUICK_START.md`** 🆕
-  - AB test vs platform comparison decision guide
-  - D+1 lag requirement explained
+## Guides & Documentation
+
+### AB Test Analysis
+- **`AB_TEST_QUICK_START.md`**
+  - How to use AB test queries
   - Assignment table structure
+  - Date range explanation
   - Common mistakes to avoid
 
-- **`EXACT_MATCH_ANALYSIS_GUIDE.md`** 🆕
+- **`EXACT_MATCH_ANALYSIS_GUIDE.md`**
   - Exact match positioning analysis methodology
   - Order attribution tracking (exact match vs other vendors)
   - Key findings: 95.1% of rank_1 orders from exact match vendor
   - Technical notes on vendor ID matching
 
-**Platform Comparison:**
-- **`OVERALL_COMPARISON_GUIDE.md`**
-  - How to use the overall query
-  - Interpreting aggregate metrics
-  - Example scenarios
+- **`QUERY_CLASSIFICATION_GUIDE.md`**
+  - Query classification breakdown methodology
+  - How to interpret classification results
+  - Classification types explained
 
+### Query Analysis Guides
 - **`HEAD_TORSO_TAIL_GUIDE.md`**
   - Understanding Head/Torso/Tail performance
   - Optimization strategies by tier
   - Volume distribution analysis
 
-**Reference:**
+- **`OVERALL_COMPARISON_GUIDE.md`**
+  - How to use the overall query
+  - Interpreting aggregate metrics
+  - Example scenarios
+
+### Reference Documentation
 - **`comprehensive_query_dimensions_guide.md`**
   - Explains every metric in detail
   - How to interpret results
@@ -114,61 +96,18 @@ Compare Control vs Treatment variations using Eppo assignment data during active
   - What data is included/excluded
   - Filter rationale and validation
 
-**Technical Details:**
+### Technical Details
 - **`CLICK_POSITION_TRACKING_HACK.md`** ⚠️ **IMPORTANT**
   - Why click positions reset by delivery status
   - How we calculate accurate positions using `shopsIds`
   - Pagination handling and known issues
-  - Open questions for tracking team
   - **Read this if you're modifying position calculations**
 
 ---
 
 ## 🤔 Which Query Should I Use?
 
-### First: Platform Comparison vs AB Test?
-
-**Use Platform Comparison queries when:**
-- ✅ Comparing Woowa Search vs Global Search platforms
-- ✅ Multi-day trends (7+ days)
-- ✅ Historical analysis before AB test launch
-- ✅ Includes NULL_VERTICAL traffic
-
-**Use AB Test queries when:**
-- ✅ Comparing Control vs Treatment during AB test period
-- ✅ Analyzing May 30 - June 17, 2026 data (fixed AB test period)
-- ✅ Analyzing assigned users with exposure gating
-- ✅ Validating AB test traffic split
-
-### Platform Comparison Queries
-
-#### Use **Overall Comparison Query** When:
-- ✅ Creating weekly/monthly reports
-- ✅ Monitoring high-level trends
-- ✅ Presenting to executives
-- ✅ Quick health check
-- ✅ Tracking overall CTR/CVR changes
-- **Output:** 3 rows (ALL, BAEMIN_DELIVERY, NULL_VERTICAL)
-
-#### Use **Head/Torso/Tail Query** When:
-- ✅ Understanding performance by search popularity
-- ✅ Strategic optimization planning
-- ✅ Identifying which tier needs attention
-- ✅ Volume distribution analysis
-- ✅ Checking if Head searches perform best
-- **Output:** 9 rows (3 verticals × 3 tiers)
-
-#### Use **Detailed Comparison Query** When:
-- ✅ Finding specific problematic search terms
-- ✅ Deep-dive analysis
-- ✅ Understanding which queries drive metrics
-- ✅ Prioritizing optimization work
-- ✅ Analyzing individual search behavior
-- **Output:** Hundreds/thousands of rows (one per search term)
-
-### AB Test Queries
-
-#### Use **AB Test Overall Query** When:
+### Use **AB Test Overall Query** When:
 - ✅ AB test summary analysis
 - ✅ Validating traffic split (~50/50)
 - ✅ Quick Control vs Treatment comparison
@@ -176,7 +115,7 @@ Compare Control vs Treatment variations using Eppo assignment data during active
 - **Output:** 2-3 rows (ALL, BAEMIN_DELIVERY only)
 - **Date Range:** May 30 - June 17, 2026 (fixed)
 
-#### Use **AB Test Head/Torso/Tail Query** When:
+### Use **AB Test Head/Torso/Tail Query** When:
 - ✅ Understanding which tier wins/loses
 - ✅ Strategic AB test insights
 - ✅ Checking if Head tier performs better
@@ -184,7 +123,7 @@ Compare Control vs Treatment variations using Eppo assignment data during active
 - **Output:** 6-9 rows (2-3 verticals × 3 tiers)
 - **Date Range:** May 30 - June 17, 2026 (fixed)
 
-#### Use **AB Test Detailed Query** When:
+### Use **AB Test Detailed Query** When:
 - ✅ Finding which queries win/lose
 - ✅ Deep-dive AB test analysis
 - ✅ Investigating specific search term issues
@@ -192,61 +131,37 @@ Compare Control vs Treatment variations using Eppo assignment data during active
 - **Output:** Hundreds/thousands of rows (one per search query)
 - **Date Range:** May 30 - June 17, 2026 (fixed)
 
-### Recommended Workflows
+### Use **Query Classification Breakdown** When:
+- ✅ Understanding performance by query type
+- ✅ Analyzing restaurant vs item vs cuisine queries
+- ✅ Finding which classifications perform best
+- **Output:** Rows grouped by vertical, tier, and classification
+- **Date Range:** May 30 - June 17, 2026 (fixed)
 
-**Platform Comparison:**
-1. **Start with Overall** → Is there an issue? (e.g., "CTR dropped 5%")
-2. **Run Head/Torso/Tail** → Which tier has the issue? (e.g., "Head CTR dropped")
-3. **Use Detailed** → Which specific searches? (e.g., "pizza, chicken, burger")
-4. **Export all three** → Overall for exec summary, H/T/T for strategy, Detailed for action items
+### Use **Exact Match Analysis** When:
+- ✅ Understanding exact match positioning impact
+- ✅ Analyzing order attribution by vendor
+- ✅ Measuring displacement effects
+- ✅ Restaurant query-specific analysis
+- **Output:** Performance by exact match category (rank_1, displaced, no_match)
+- **Date Range:** May 30 - June 17, 2026 (fixed)
 
-**AB Test:**
+### Recommended Workflow
+
+**AB Test Analysis:**
 1. **Start with Overall AB Test** → Is Treatment winning? (e.g., "+8% CTR, significant")
 2. **Check traffic split** → Is it ~50/50? (e.g., "50.2% treatment traffic")
 3. **Run Head/Torso/Tail AB Test** → Which tier wins? (e.g., "Head +12%, Torso +5%")
 4. **Use Detailed AB Test** → Which queries win/lose? (e.g., "Top 10 wins, Top 10 losses")
-5. **Run Exact Match Analysis** → How does exact match positioning affect conversion?
-6. **Validate before shipping** → Ensure consistent improvements across tiers
+5. **Run Query Classification** → Which query types perform best?
+6. **Run Exact Match Analysis** → How does exact match positioning affect conversion?
+7. **Validate before shipping** → Ensure consistent improvements across tiers
 
 ---
 
 ## 🚀 Quick Start
 
-### Option A: Platform Comparison (Woowa vs Global Search)
-
-**Step 1: Open the Overall Query**
-```bash
-open ~/woowa_search_analysis/overall_comparison_query.sql
-```
-
-**Step 2: Change Dates (Lines 4-5)**
-```sql
-DECLARE start_date DATE DEFAULT CURRENT_DATE() - 1;  -- Yesterday
-DECLARE end_date DATE DEFAULT CURRENT_DATE() - 1;    -- Yesterday
-```
-
-**Step 3: Run in BigQuery**
-- You'll get 3 rows (ALL, BAEMIN_DELIVERY, NULL_VERTICAL)
-- Perfect for weekly reports!
-
-**Date Options:**
-```sql
--- For yesterday (recommended - complete data):
-DECLARE start_date DATE DEFAULT CURRENT_DATE() - 1;
-DECLARE end_date DATE DEFAULT CURRENT_DATE() - 1;
-
--- For last 7 days:
-DECLARE start_date DATE DEFAULT CURRENT_DATE() - 7;
-DECLARE end_date DATE DEFAULT CURRENT_DATE() - 1;
-
--- For specific date range:
-DECLARE start_date DATE DEFAULT DATE '2026-05-20';
-DECLARE end_date DATE DEFAULT DATE '2026-05-26';
-```
-
----
-
-### Option B: AB Test Analysis (Control vs Treatment)
+### Running AB Test Analysis
 
 **Step 1: Open the AB Test Overall Query**
 ```bash
@@ -273,58 +188,22 @@ All AB test queries use the same fixed date range for consistency:
 
 ---
 
-### Option C: Detailed Analysis (Deep Dive)
-
-**For Platform Comparison:**
-```bash
-open ~/woowa_search_analysis/comprehensive_comparison_query.sql
-```
-
-**For AB Test:**
-```bash
-open ~/woowa_search_analysis/comprehensive_comparison_query_ab_test.sql
-```
-
-- You'll get hundreds/thousands of rows
-- One row per search term/query
-- Filter for high-volume searches first
-
----
-
-## ⚠️ Important Query Filters
-
-The query automatically applies these filters:
-
-1. **Global Search Must Have ≥5 Searches**
-   - Removes low-volume noise
-   - Only shows statistically meaningful comparisons
-
-2. **Includes NULL Vertical**
-   - Old Woowa search traffic
-   - Has exceptionally high CVR (~75%!)
-   - Important to monitor
-
-3. **Excludes BAEMIN_TAKEOUT**
-   - Not served by Global Search
-   - Ensures apples-to-apples comparison
-
----
-
 ## 📊 What You'll Get
 
 ### Search Verticals Analyzed:
 - ✅ **ALL** - Mixed Results Tab
 - ✅ **BAEMIN_DELIVERY** - Delivery Tab
-- ✅ **NULL_VERTICAL** - Old Woowa Search (high CVR!)
-- ❌ **BAEMIN_TAKEOUT** - Excluded (not in GS)
+- ❌ **NULL_VERTICAL** - Excluded (browsing/favorites, not search)
+- ❌ **BAEMIN_TAKEOUT** - Excluded (not in AB test scope)
 
 ### Metrics Provided:
-- **Volume**: Searches, sessions
+- **Volume**: Searches, sessions, unique queries
 - **Funnel**: CTR, CVR, ZRR
 - **Quality**: Avg results, zero results
-- **Engagement**: Pagination, click rank, filters
-- **Session**: Searches per session, multi-search sessions
+- **Engagement**: Pagination, click rank
+- **Session**: Searches per session
 - **Comparison**: % change, statistical significance
+- **Traffic Split**: Validation of ~50/50 distribution
 
 ---
 
@@ -337,59 +216,35 @@ The query automatically applies these filters:
 | ZRR | <5% | >10% |
 | Avg Click Rank | <3.0 | >5.0 |
 | Clicks Position 1-3 | >60% | <40% |
+| Traffic Split | 48-52% | <45% or >55% |
 
 ---
 
 ## 📈 Example Output
 
-| search_vertical | search_query | woowa_search_searches | woowa_search_ctr | woowa_search_cvr | global_search_searches | global_search_ctr | global_search_cvr | ctr_pct_change | ctr_significant |
-|-----------------|--------------|---------------------|----------------|----------------|-------------------|----------------|----------------|----------------|----------------|
-| ALL | birthday cake | 450 | 0.1200 | 0.0533 | 520 | 0.1478 | 0.0609 | **+23.17%** | ✅ Yes |
-| BAEMIN_DELIVERY | pizza | 680 | 0.0950 | 0.0450 | 740 | 0.1100 | 0.0520 | **+15.79%** | ✅ Yes |
-| NULL_VERTICAL | chicken | 320 | 0.6500 | 0.7496 | 85 | 0.6200 | 0.7200 | **-4.62%** | ❌ No |
+### Overall AB Test Query
+
+| search_vertical | control_searches | control_cvr | treatment_searches | treatment_cvr | cvr_pct_change | cvr_stat_sig | treatment_traffic_pct |
+|-----------------|------------------|-------------|--------------------|--------------:|---------------:|--------------|----------------------:|
+| ALL | 1,250,000 | 0.0450 | 1,280,000 | 0.0485 | **+7.78%** | ✅ Yes | 50.6% |
+| BAEMIN_DELIVERY | 980,000 | 0.0420 | 1,000,000 | 0.0455 | **+8.33%** | ✅ Yes | 50.5% |
 
 **Interpretation:**
-- ✅ ALL & DELIVERY verticals: Global Search performing better (statistically significant)
-- ⚠️ NULL_VERTICAL: Slight CVR drop but not statistically significant (need more data)
-
----
-
-## 🔍 Special Note: NULL_VERTICAL
-
-The NULL vertical represents **old Woowa search** and has:
-- **Very high CVR** (~75%!)
-- **Lower volume** in Global Search
-- **Different user behavior** than other verticals
-
-**Why this matters:**
-- Could indicate different entry points (direct links vs search)
-- May represent loyal/repeat customers
-- Needs special attention - don't let CVR drop!
-
-**Action:** Monitor NULL_VERTICAL separately and investigate if CVR drops significantly.
+- ✅ Treatment is winning (+7.78% CVR overall)
+- ✅ Statistically significant improvement
+- ✅ Traffic split is balanced (~50/50)
 
 ---
 
 ## 📝 Tips for Analysis
 
-1. **Start with High Frequency terms** - Biggest impact
-2. **Check statistical significance** - Don't act on small samples
-3. **Compare similar searches** - Control for intent
-4. **Look for patterns** - Is issue consistent across verticals?
-5. **Export to sheets** - Use conditional formatting for quick insights
-
----
-
-## 🆘 Need Help?
-
-### Quick Answers:
-- **"What does this column mean?"** → Check `query_output_columns_reference.md`
-- **"How do I interpret this metric?"** → Check `comprehensive_query_dimensions_guide.md`
-- **"What fields are available?"** → Run `sample_perseus_data.sql`
-- **"What changed in the query?"** → Check `CHANGELOG.md`
-
-### File Locations:
-All files are in: `~/woowa_search_analysis/`
+1. **Start with Overall** - Get the high-level picture first
+2. **Check Traffic Split** - Ensure ~50/50 distribution (validate AB test integrity)
+3. **Drill Down by Tier** - Understand which tiers drive the win/loss
+4. **Check Statistical Significance** - Don't act on small samples
+5. **Analyze by Classification** - See if certain query types perform better
+6. **Run Exact Match Analysis** - Understand positioning impact for restaurant queries
+7. **Export to Sheets** - Use conditional formatting for quick insights
 
 ---
 
@@ -397,14 +252,13 @@ All files are in: `~/woowa_search_analysis/`
 June 24, 2026
 
 ## 🏷️ Version
-v3.1 - Standardized date ranges and documentation cleanup
+v3.2 - Removed platform comparison queries, AB test focus only
 - ✅ Fixed date range (May 30 - June 17, 2026) across all AB test queries
-- ✅ Added Exact Match Analysis queries and guide
-- ✅ Cleaned up redundant documentation
 - ✅ AB Test: Control vs Treatment comparison
+- ✅ Exact Match Analysis queries and guide
 - ✅ Unified tier calculation across variations
 - ✅ Traffic split validation
-- ✅ Platform Comparison: Woowa vs Global Search
+- ✅ Removed platform comparison (Woowa vs Global Search) queries
 
 ## 🔗 Related Resources
 
@@ -416,3 +270,9 @@ v3.1 - Standardized date ranges and documentation cleanup
 
 **Assignment Table:** 
 `dhub-gd-analytics.eppo_input.gs_woowa_assignments`
+
+**Perseus Events Table:**
+`fulfillment-dwh-production.curated_data_shared_data_stream_perseus.baemin_korea_perseus`
+
+**Backend Tracking Table:**
+`search-restaurant-stats-9826.backendtracking.vendor-v1`

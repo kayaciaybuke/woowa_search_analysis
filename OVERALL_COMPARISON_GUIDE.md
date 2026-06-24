@@ -1,31 +1,31 @@
-# Overall Comparison Query Guide
+# Overall AB Test Query Guide
 
 ## 🎯 What This Query Does
 
-This query provides a **high-level, aggregated view** of search performance across **ALL search queries combined**.
+This query provides a **high-level, aggregated view** of AB test performance across **ALL search queries combined**, comparing Control (A) vs Treatment (B).
 
 Unlike the detailed query that shows performance for each individual search term, this query gives you:
-- ✅ **Overall CTR/CVR** across all searches
-- ✅ **Total search volume** comparison
+- ✅ **Overall CTR/CVR** comparison between Control and Treatment
+- ✅ **Total search volume** per variation
 - ✅ **Aggregate click rank** distribution
-- ✅ **Overall pagination behavior**
+- ✅ **Traffic split validation** (~50/50)
 - ✅ **Session-level engagement**
+- ✅ **Statistical significance** testing
 
-**Use this for:** Executive summaries, weekly reports, high-level trend monitoring
+**Use this for:** Executive summaries, AB test check-ins, high-level performance monitoring
 
-**Use the detailed query for:** Deep-dive analysis, problematic search term identification
+**Use the detailed query for:** Deep-dive analysis, identifying winning/losing queries
 
 ---
 
 ## 📊 Expected Output
 
-You'll get **3 rows** (one per vertical):
+You'll get **2-3 rows** (one per vertical):
 
-| search_vertical | woowa_search_total_searches | woowa_search_ctr | woowa_search_cvr | global_search_total_searches | global_search_ctr | global_search_cvr | ctr_pct_change | ctr_significant |
-|-----------------|-------------------|--------|--------|-------------------|---------|---------|----------------|----------------|
-| ALL | 125,340 | 0.0985 | 0.0412 | 89,250 | 0.1123 | 0.0465 | **+14.01%** | Yes |
-| BAEMIN_DELIVERY | 198,450 | 0.0912 | 0.0389 | 142,680 | 0.1045 | 0.0438 | **+14.58%** | Yes |
-| NULL_VERTICAL | 45,820 | 0.6234 | 0.7496 | 12,450 | 0.5987 | 0.7201 | **-3.96%** | No |
+| search_vertical | control_searches | control_cvr | treatment_searches | treatment_cvr | cvr_pct_change | cvr_stat_sig | treatment_traffic_pct |
+|-----------------|------------------|-------------|--------------------|--------------:|---------------:|--------------|----------------------:|
+| ALL | 1,250,000 | 0.0450 | 1,280,000 | 0.0485 | **+7.78%** | ✅ Yes | 50.6% |
+| BAEMIN_DELIVERY | 980,000 | 0.0420 | 1,000,000 | 0.0455 | **+8.33%** | ✅ Yes | 50.5% |
 
 ---
 
@@ -34,281 +34,243 @@ You'll get **3 rows** (one per vertical):
 | Aspect | Detailed Query | Overall Query |
 |--------|---------------|---------------|
 | **Granularity** | Per search term | All searches aggregated |
-| **Rows** | Hundreds/thousands | 3 (one per vertical) |
-| **Volume filter** | Global Search ≥5 searches per term | No filter (shows all) |
-| **Use case** | Find problematic searches | Executive summary |
-| **Best for** | Deep analysis | Trend monitoring |
+| **Rows** | Hundreds/thousands | 2-3 (one per vertical) |
+| **Volume filter** | Treatment ≥5 searches per term | No filter (shows all) |
+| **Use case** | Find winning/losing queries | Executive summary |
+| **Best for** | Deep analysis | AB test check-ins |
 
 ---
 
 ## 📈 Metrics Included
 
 ### Volume Metrics
-- **`woowa_search_total_searches`** / **`global_search_total_searches`**: Total number of searches
-- **`woowa_search_unique_sessions`** / **`global_search_unique_sessions`**: Unique user sessions
-- **`woowa_search_unique_search_terms`** / **`global_search_unique_search_terms`**: How many different queries
+- **`control_searches`** / **`treatment_searches`**: Total number of searches per variation
+- **`control_sessions`** / **`treatment_sessions`**: Unique user sessions
+- **`treatment_traffic_pct`**: % of traffic in Treatment (should be ~50%)
 
-### Core Funnel
-- **`woowa_search_ctr`** / **`global_search_ctr`**: Overall Click-Through Rate
-- **`woowa_search_cvr`** / **`global_search_cvr`**: Overall Conversion Rate
-- **`woowa_search_zrr`** / **`global_search_zrr`**: Overall Zero Result Rate
+### Funnel Metrics
+- **`control_ctr`** / **`treatment_ctr`**: Click-Through Rate
+- **`control_cvr`** / **`treatment_cvr`**: Conversion Rate (searches → orders)
+- **`control_click_to_order_rate`** / **`treatment_click_to_order_rate`**: % of clicks that convert
 
 ### Quality Metrics
-- **`woowa_search_avg_results`** / **`global_search_avg_results`**: Average vendors shown
-- **`woowa_search_avg_click_rank`** / **`global_search_avg_click_rank`**: Average position clicked
+- **`control_zrr`** / **`treatment_zrr`**: Zero Result Rate (% of searches with no results)
+- **`control_avg_click_rank`** / **`treatment_avg_click_rank`**: Average position of first click
+- **`control_avg_results`** / **`treatment_avg_results`**: Average number of results returned
 
-### Click Distribution (NEW!)
-- **`woowa_search_pct_clicks_pos_1`** / **`global_search_pct_clicks_pos_1`**: % of clicks on position 1
-- **`woowa_search_pct_clicks_pos_2_3`** / **`global_search_pct_clicks_pos_2_3`**: % of clicks on positions 2-3
+### Engagement Metrics
+- **`control_pagination_rate`** / **`treatment_pagination_rate`**: % of searches that paginate
+- **`control_searches_per_session`** / **`treatment_searches_per_session`**: Avg searches per session
 
-### Filter Usage
-- **`woowa_search_pct_searches_with_filters`** / **`global_search_pct_searches_with_filters`**: % of searches using filters
-- **`woowa_search_ctr_with_filters`** / **`global_search_ctr_with_filters`**: CTR when filters applied
-- **`woowa_search_ctr_without_filters`** / **`global_search_ctr_without_filters`**: CTR without filters
-
-### Session Engagement
-- **`woowa_search_avg_searches_per_session`** / **`global_search_avg_searches_per_session`**: Avg searches per user
-- **`woowa_search_pct_multi_search_sessions`** / **`global_search_pct_multi_search_sessions`**: % sessions with 2+ searches
-
-### Comparison
-- **`ctr_pct_change`**: % change in CTR (Global Search vs Woowa Search)
-- **`cvr_pct_change`**: % change in CVR
-- **`search_volume_diff`**: Absolute search volume difference
-- **`ctr_statistically_significant`**: Is difference real? (Yes/No)
+### Comparison Metrics
+- **`ctr_pct_change`** / **`cvr_pct_change`**: % difference Treatment vs Control
+- **`ctr_statistically_significant`** / **`cvr_statistically_significant`**: Statistical significance (z-test)
 
 ---
 
 ## 🎯 How to Interpret Results
 
-### Scenario 1: Healthy Global Search Performance ✅
-```
-search_vertical: ALL
-woowa_search_total_searches: 150,000
-woowa_search_ctr: 0.0950
-woowa_search_cvr: 0.0400
+### 1. Check Traffic Split First ✅
 
-global_search_total_searches: 120,000
-global_search_ctr: 0.1100 (+15.79%)
-global_search_cvr: 0.0450 (+12.50%)
-ctr_statistically_significant: Yes
-```
+**Look at:** `treatment_traffic_pct`
 
-**Interpretation:**
-- ✅ Global Search has higher CTR and CVR (both statistically significant)
-- ✅ Lower search volume but better quality
-- ✅ Users finding what they need faster
+**Good:**
+- 48-52% → Traffic split is balanced ✅
+- AB test randomization is working correctly
+
+**Red Flag:**
+- <45% or >55% → Imbalanced traffic ⚠️
+- Check assignment logic or filtering issues
 
 ---
 
-### Scenario 2: Volume Migration in Progress 📊
-```
-search_vertical: BAEMIN_DELIVERY
-woowa_search_total_searches: 200,000
-global_search_total_searches: 80,000
-search_volume_pct_change: -60%
-```
+### 2. Evaluate CVR Performance 📈
 
-**Interpretation:**
-- Global Search still receiving less traffic (migration in progress)
-- Need to monitor as volume increases
-- Performance may change with scale
+**Look at:** `cvr_pct_change` and `cvr_statistically_significant`
+
+**Winning Treatment:**
+```
+control_cvr:  0.0450
+treatment_cvr: 0.0485
+cvr_pct_change: +7.78%
+cvr_stat_sig: Yes ✅
+```
+- **Interpretation:** Treatment is winning, statistically significant improvement
+
+**Losing Treatment:**
+```
+control_cvr:  0.0450
+treatment_cvr: 0.0438
+cvr_pct_change: -2.67%
+cvr_stat_sig: Yes ⚠️
+```
+- **Interpretation:** Treatment is losing, statistically significant degradation
+
+**Inconclusive:**
+```
+control_cvr:  0.0450
+treatment_cvr: 0.0455
+cvr_pct_change: +1.11%
+cvr_stat_sig: No
+```
+- **Interpretation:** Slight improvement but not statistically significant, need more data
 
 ---
 
-### Scenario 3: NULL Vertical Alert ⚠️
-```
-search_vertical: NULL_VERTICAL
-woowa_search_ctr: 0.6500
-woowa_search_cvr: 0.7496
+### 3. Understand CTR Changes 👆
 
-global_search_ctr: 0.6200 (-4.62%)
-global_search_cvr: 0.7201 (-3.95%)
-ctr_statistically_significant: No
-```
+**Look at:** `ctr_pct_change` and `ctr_statistically_significant`
 
-**Interpretation:**
-- ⚠️ NULL vertical (old Woowa) has exceptionally high CVR (~75%!)
-- ⚠️ Slight drop in Global Search but not statistically significant (yet)
-- 🔍 Monitor closely - this traffic is highly valuable
-- 💡 May need different ranking strategy for this segment
+**Good Patterns:**
+- ✅ CTR ↑, CVR ↑ → Better ranking + more relevant results
+- ✅ CTR ↔, CVR ↑ → Same clicks, better conversion (higher quality clicks)
+
+**Concerning Patterns:**
+- ⚠️ CTR ↑, CVR ↓ → More clicks but worse conversion (clickbait ranking?)
+- ⚠️ CTR ↓, CVR ↑ → Fewer clicks but better conversion (investigate why CTR dropped)
 
 ---
 
-## 📋 Recommended Analysis Flow
+### 4. Check Click Position 🎯
 
-### 1. **Start with Overall Query** (This one!)
-Check high-level health:
-- Is overall CTR/CVR better or worse?
-- Are differences statistically significant?
-- What's the search volume distribution?
+**Look at:** `control_avg_click_rank` vs `treatment_avg_click_rank`
 
-### 2. **If Issues Found → Use Detailed Query**
-Drill down to find:
-- Which specific search terms are underperforming?
-- Are issues concentrated in high-frequency or low-frequency terms?
-- What's the click rank distribution for problematic queries?
+**Good:**
+- Treatment avg click rank < Control avg click rank
+- Users clicking on higher-ranked (more prominent) results
 
-### 3. **Export Both for Reporting**
-- **Overall**: Executive summary, weekly metrics
-- **Detailed**: Deep-dive analysis, action items
+**Example:**
+```
+control_avg_click_rank:  3.5
+treatment_avg_click_rank: 2.8
+```
+- **Interpretation:** Treatment users click 0.7 positions higher → Better ranking relevance
 
 ---
 
-## 🔍 Key Insights to Look For
+## 🚨 Common Patterns
 
-### Volume Distribution
+### Pattern 1: Clear Win ✅
+```
+CVR: +10%, statistically significant
+CTR: +5%, statistically significant
+Avg Click Rank: -0.5 (improved)
+Traffic Split: 50.2%
+```
+**Action:** Ship Treatment
+
+---
+
+### Pattern 2: Neutral Result 🤷
+```
+CVR: +1%, not significant
+CTR: +0.5%, not significant
+Avg Click Rank: +0.1
+Traffic Split: 50.0%
+```
+**Action:** Need more data or not worth shipping
+
+---
+
+### Pattern 3: Mixed Results ⚠️
+```
+CVR: +8%, statistically significant
+CTR: -3%, statistically significant
+Avg Click Rank: -1.0 (improved)
+Traffic Split: 50.5%
+```
+**Action:** Investigate further - better conversion but fewer clicks. Check:
+- Zero Result Rate (fewer results returned?)
+- Drill down by tier (Head/Torso/Tail)
+- Check specific queries (detailed query)
+
+---
+
+### Pattern 4: Traffic Split Issue 🚫
+```
+CVR: +15%, statistically significant
+CTR: +12%, statistically significant
+Traffic Split: 65%  ← PROBLEM!
+```
+**Action:** Don't trust results - imbalanced traffic indicates filtering/assignment bug
+
+---
+
+## 💡 Next Steps After Overall Query
+
+### If Treatment is Winning:
+1. ✅ Run **Head/Torso/Tail query** → Which tier drives the win?
+2. ✅ Run **Detailed query** → Which specific queries win?
+3. ✅ Run **Query Classification** → Which query types win?
+4. ✅ Run **Exact Match Analysis** → Does exact match positioning improve?
+5. ✅ Validate consistency across all dimensions before shipping
+
+### If Treatment is Losing:
+1. ⚠️ Run **Head/Torso/Tail query** → Which tier is losing?
+2. ⚠️ Run **Detailed query** → Which specific queries lose?
+3. ⚠️ Investigate root cause (ranking, relevance, performance?)
+
+### If Results are Mixed/Unclear:
+1. 🤔 Check **sample size** - enough data for significance?
+2. 🤔 Run **tier breakdown** - is one tier offsetting another?
+3. 🤔 Check **traffic split** - is randomization working?
+
+---
+
+## 📊 Example Analysis Workflow
+
+**Step 1: Overall Check**
 ```sql
--- What % of traffic is in each vertical?
-woowa_search_total_searches by vertical:
-- ALL: 40%
-- BAEMIN_DELIVERY: 50%
-- NULL_VERTICAL: 10%
+-- Run overall_comparison_query_ab_test.sql
+-- Result: Treatment +7.78% CVR, statistically significant, 50.6% traffic ✅
 ```
 
-### Click Rank Quality
+**Step 2: Drill Down**
 ```sql
--- What % of clicks are in top 3 positions?
-Target: >60% in positions 1-3
-
-woowa_search_pct_clicks_pos_1: 42%
-woowa_search_pct_clicks_pos_2_3: 23%
-= 65% in top 3 ✅ Good!
+-- Run head_torso_tail_comparison_query_ab_test.sql
+-- Result: Head +12% CVR, Torso +5% CVR, Tail +2% CVR (not sig)
 ```
 
-### Filter Dependency
+**Step 3: Investigate**
 ```sql
--- Are users relying on filters?
-woowa_search_pct_searches_with_filters: 25%
-woowa_search_ctr_with_filters: 0.15
-woowa_search_ctr_without_filters: 0.08
-
-= 87.5% CTR lift with filters
-= High filter dependency ⚠️
+-- Run comprehensive_comparison_query_ab_test.sql
+-- Result: Top 10 queries all winning, bottom 20% flat
 ```
 
-### Session Engagement
+**Step 4: Validate**
 ```sql
--- Are users struggling to find what they want?
-woowa_search_avg_searches_per_session: 1.8
-woowa_search_pct_multi_search_sessions: 45%
-
-vs
-
-global_search_avg_searches_per_session: 1.4 (-22%)
-global_search_pct_multi_search_sessions: 32%
-
-= AWS users find what they need faster ✅
+-- Run query_classification_breakdown_ab_test.sql
+-- Result: Restaurant queries +15% CVR, Item queries +3% CVR
 ```
 
----
-
-## ⚠️ Important Notes
-
-### 1. No "Global Search ≥5 searches" Filter
-Unlike the detailed query, this aggregates **ALL searches** regardless of Global Search volume.
-
-**Why?** We want the true overall picture, not filtered.
-
-### 2. NULL_VERTICAL Special Handling
-- NULL vertical has ~75% CVR (10x higher than other verticals!)
-- Represents old Woowa search traffic
-- Small volume but high value
-- Monitor separately - different user behavior
-
-### 3. Statistical Significance Still Applies
-Even with high volumes, check the `_statistically_significant` columns.
+**Conclusion:** Treatment is a clear win, driven by Head tier and restaurant queries. Ship it! ✅
 
 ---
 
-## 📊 Sample Output Interpretation
+## 🎯 Key Takeaways
 
-### Example Output:
-```
-search_vertical: ALL
-woowa_search_total_searches: 125,340
-woowa_search_ctr: 0.0985
-woowa_search_cvr: 0.0412
-woowa_search_avg_click_rank: 3.2
-woowa_search_pct_clicks_pos_1: 38%
-woowa_search_pct_clicks_pos_2_3: 24%
-
-global_search_total_searches: 89,250
-global_search_ctr: 0.1123 (+14.01%)
-global_search_cvr: 0.0465 (+12.86%)
-global_search_avg_click_rank: 2.5 (-0.7)
-global_search_pct_clicks_pos_1: 48% (+10 percentage points)
-global_search_pct_clicks_pos_2_3: 26% (+2 percentage points)
-
-ctr_statistically_significant: Yes
-cvr_statistically_significant: Yes
-```
-
-### What This Tells You:
-
-**✅ Wins:**
-1. **CTR up 14%** (statistically significant)
-2. **CVR up 13%** (statistically significant)
-3. **Better ranking** - users clicking 0.7 positions higher
-4. **More clicks at #1** - 48% vs 38% (10pp improvement!)
-5. **74% of clicks in top 3** positions (48% + 26%)
-
-**📊 Context:**
-- Global Search has 71% of Woowa Search volume (89K vs 125K)
-- Migration still in progress
-- Performance improvements are real (statistically significant)
-
-**🎯 Recommendation:**
-- Continue migration - Global Search performing better
-- Monitor as volume scales
-- Track NULL_VERTICAL separately
+1. **Always check traffic split first** - Invalid if not ~50/50
+2. **CVR is the primary metric** - Orders matter most
+3. **Statistical significance matters** - Don't ship on noise
+4. **Drill down on mixed results** - Overall can hide important details
+5. **Use this as your starting point** - Then drill down with other queries
 
 ---
 
-## 🚀 Quick Start
+## 📅 Date Range
 
-### 1. Copy the Query
-```bash
-pbcopy < ~/woowa_search_analysis/overall_comparison_query.sql
-```
+All queries use **fixed date range: May 30 - June 17, 2026 (inclusive)**
 
-### 2. Change Dates (Lines 4-5)
-```sql
-DECLARE start_date DATE DEFAULT CURRENT_DATE() - 1;
-DECLARE end_date DATE DEFAULT CURRENT_DATE() - 1;
-```
-
-### 3. Run in BigQuery
-
-### 4. Export Results
-You'll get 3 rows - one per vertical - perfect for reporting!
+This ensures:
+- ✅ Consistent analysis window
+- ✅ Reproducible results
+- ✅ Easy comparison across queries
 
 ---
 
-## 📅 Recommended Cadence
+## 🔗 Related Queries
 
-- **Daily**: Monitor overall CTR/CVR
-- **Weekly**: Track trends, check statistical significance
-- **Monthly**: Deep dive with detailed query
-
----
-
-## 💡 Pro Tips
-
-1. **Compare week-over-week**: Run for last week and week before
-2. **Track trends**: Export to sheets, create line charts
-3. **Alert on drops**: If CTR drops >5% and significant, investigate
-4. **Monitor NULL vertical**: High CVR segment - don't let it drop!
-5. **Use with detailed query**: Overall for "what", detailed for "why"
-
----
-
-## 🔗 Related Files
-
-- **Detailed Query**: `comprehensive_comparison_query.sql` (per-term analysis)
-- **Main README**: `README.md` (package overview)
-- **Column Reference**: `query_output_columns_reference.md`
-
----
-
-## 📝 Last Updated
-May 27, 2026
+- **`head_torso_tail_comparison_query_ab_test.sql`** - Drill down by tier
+- **`comprehensive_comparison_query_ab_test.sql`** - Drill down by query
+- **`query_classification_breakdown_ab_test.sql`** - Drill down by classification
+- **`exact_match_analysis_queries.sql`** - Restaurant query analysis

@@ -1,5 +1,76 @@
 # Query Changes - Latest Update
 
+## Changes Made on June 24, 2026 (v3.2 - Removed Platform Comparison, AB Test Focus Only)
+
+### 🗑️ REMOVED: Platform Comparison Queries
+
+**Files Deleted:**
+1. `overall_comparison_query.sql` (Woowa vs Global Search)
+2. `head_torso_tail_comparison_query.sql` (Woowa vs Global Search)
+3. `comprehensive_comparison_query.sql` (Woowa vs Global Search)
+
+**Reason:** Repository now focuses exclusively on AB test analysis (Control vs Treatment). Platform comparison (Woowa vs Global Search) is no longer needed.
+
+---
+
+### 📝 UPDATED: Documentation Rewritten for AB Test Focus
+
+**Files Completely Rewritten:**
+1. **`README.md`** - Removed all platform comparison references
+   - Now focuses exclusively on 5 AB test queries
+   - Updated Quick Start guide for AB test analysis
+   - Removed platform comparison vs AB test decision guide
+   - Updated version to v3.2
+
+2. **`OVERALL_COMPARISON_GUIDE.md`** - Converted to AB test guide
+   - Changed from platform comparison (Woowa vs Global Search) to AB test (Control vs Treatment)
+   - Added traffic split validation section
+   - Added AB test-specific interpretation patterns
+   - Added decision workflow for mixed results
+
+3. **`HEAD_TORSO_TAIL_GUIDE.md`** - Converted to AB test guide
+   - Changed from platform comparison to AB test (Control vs Treatment)
+   - Emphasized unified tier calculation for AB tests
+   - Added AB test-specific patterns and interpretations
+   - Added tier-specific optimization strategies for AB testing
+
+**Files Preserved (Still Relevant):**
+- `QUERY_CLASSIFICATION_GUIDE.md` - Already AB test focused
+- `EXACT_MATCH_ANALYSIS_GUIDE.md` - AB test focused
+- `comprehensive_query_dimensions_guide.md` - Metrics reference
+- `query_output_columns_reference.md` - Columns reference
+- `CLICK_POSITION_TRACKING_HACK.md` - Technical reference
+- `DATA_FILTERING_CONSTRAINTS.md` - Filter specifications
+- `AB_TEST_QUICK_START.md` - AB test guide
+
+---
+
+### 📦 FINAL QUERY LIST (5 Queries)
+
+**AB Test Queries:**
+1. `overall_comparison_query_ab_test.sql` - Control vs Treatment summary
+2. `head_torso_tail_comparison_query_ab_test.sql` - Control vs Treatment by tier
+3. `comprehensive_comparison_query_ab_test.sql` - Control vs Treatment per query
+4. `query_classification_breakdown_ab_test.sql` - Control vs Treatment by classification
+5. `exact_match_analysis_queries.sql` - Exact match positioning analysis
+
+**All queries use fixed date range: May 30 - June 17, 2026 (inclusive)**
+
+---
+
+### 🎯 Repository Focus
+
+**Before v3.2:** Mixed focus (Platform Comparison + AB Test)
+**After v3.2:** Exclusive focus on AB Test analysis
+
+**Why this change:**
+- Platform comparison (Woowa vs Global Search) is complete/obsolete
+- Current focus is AB test analysis (Control vs Treatment)
+- Cleaner, more focused repository
+- Less confusion for users
+
+---
+
 ## Changes Made on June 24, 2026 (v3.1 - Date Standardization & Documentation Cleanup)
 
 ### 🔧 STANDARDIZED: Fixed Date Ranges Across All AB Test Queries

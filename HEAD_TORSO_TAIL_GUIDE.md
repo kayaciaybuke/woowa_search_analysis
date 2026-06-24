@@ -1,28 +1,29 @@
-# Head / Torso / Tail Query Guide
+# Head / Torso / Tail AB Test Query Guide
 
 ## 🎯 What This Query Does
 
-This query breaks down search performance by **frequency tier** to understand how different types of searches perform:
+This query breaks down AB test performance by **frequency tier** to understand how Control (A) vs Treatment (B) perform for different types of searches:
 
-- **Head** (Top 50% of volume): Popular, high-volume search terms
-- **Torso** (Next 30% of volume): Medium-popularity searches
-- **Tail** (Bottom 20% of volume): Long-tail, rare searches
+- **Head** (Top 50% of combined volume): Popular, high-volume search terms
+- **Torso** (Next 30% of combined volume): Medium-popularity searches
+- **Tail** (Bottom 20% of combined volume): Long-tail, rare searches
 
-**Why this matters:** Head/Torso/Tail searches have different characteristics and require different optimization strategies.
+**Why this matters:** Head/Torso/Tail searches have different characteristics and require different optimization strategies. A treatment that wins overall might only win in Head tier, or vice versa.
 
-**🆕 UPDATED:** Tiers are now **volume-based** (cumulative percentage) rather than fixed thresholds, ensuring Head always represents the most impactful searches.
+**🔑 Key Feature:** Tiers are calculated based on **combined Control + Treatment volume**, ensuring the same queries are in the same tier for both variations (apples-to-apples comparison).
 
 ---
 
 ## 📊 Expected Output
 
-You'll get **9 rows** (3 verticals × 3 tiers):
+You'll get **6-9 rows** (2-3 verticals × 3 tiers):
 
-| search_vertical | frequency_tier | tier_definition | woowa_search_searches | woowa_search_unique_search_terms | woowa_search_ctr | woowa_search_cvr | global_search_searches | global_search_ctr | global_search_cvr | ctr_pct_change |
-|-----------------|----------------|-----------------|-------------|------------------------|--------|--------|--------------|---------|---------|----------------|
-| ALL | Head | ≥100 searches | 85,340 | 245 | 0.1250 | 0.0520 | 62,150 | 0.1420 | 0.0580 | **+13.60%** |
-| ALL | Torso | 20-99 searches | 28,450 | 680 | 0.0890 | 0.0380 | 19,200 | 0.1020 | 0.0420 | **+14.61%** |
-| ALL | Tail | <20 searches | 11,550 | 1,845 | 0.0520 | 0.0180 | 7,900 | 0.0610 | 0.0210 | **+17.31%** |
+| search_vertical | frequency_tier | tier_definition | control_searches | control_unique_queries | control_cvr | treatment_searches | treatment_unique_queries | treatment_cvr | cvr_pct_change | cvr_stat_sig |
+|-----------------|----------------|-----------------|------------------|------------------------|-------------|--------------------|--------------------------|--------------:|---------------:|--------------|
+| ALL | Head | Top 50% of combined volume | 625,000 | 245 | 0.0520 | 640,000 | 245 | 0.0580 | **+11.54%** | ✅ Yes |
+| ALL | Torso | Next 30% of combined volume | 312,500 | 680 | 0.0380 | 320,000 | 680 | 0.0420 | **+10.53%** | ✅ Yes |
+| ALL | Tail | Bottom 20% of combined volume | 312,500 | 1,845 | 0.0180 | 320,000 | 1,845 | 0.0185 | **+2.78%** | ❌ No |
+| BAEMIN_DELIVERY | Head | Top 50% of combined volume | 490,000 | 198 | 0.0495 | 500,000 | 198 | 0.0545 | **+10.10%** | ✅ Yes |
 | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... | ... |
 
 ---
@@ -30,409 +31,364 @@ You'll get **9 rows** (3 verticals × 3 tiers):
 ## 🔑 Key Metrics by Tier
 
 ### Volume Distribution
-- **`woowa_search_pct_of_vertical_volume`**: What % of total searches this tier represents
-- **`woowa_search_unique_search_terms`**: How many different search queries
-- **`woowa_search_avg_searches_per_term`**: Average searches per unique term
+- **`control_searches`** / **`treatment_searches`**: Total searches per variation in this tier
+- **`control_unique_queries`** / **`treatment_unique_queries`**: Number of different search terms
+- **Same query count:** Both variations should have the same unique_queries (unified tiers)
 
 **Example:**
 ```
-Head:  68% of volume, 245 terms, 348 searches/term
-Torso: 23% of volume, 680 terms, 42 searches/term
-Tail:   9% of volume, 1,845 terms, 6 searches/term
+Head:  68% of volume, 245 unique terms, ~2,600 searches/term
+Torso: 23% of volume, 680 unique terms, ~460 searches/term
+Tail:   9% of volume, 1,845 unique terms, ~170 searches/term
 ```
 
 ### Performance Metrics
-- **`woowa_search_ctr`** / **`global_search_ctr`**: Click-Through Rate by tier
-- **`woowa_search_cvr`** / **`global_search_cvr`**: Conversion Rate by tier
-- **`woowa_search_zrr`** / **`global_search_zrr`**: Zero Result Rate by tier
+- **`control_ctr`** / **`treatment_ctr`**: Click-Through Rate by tier
+- **`control_cvr`** / **`treatment_cvr`**: Conversion Rate by tier
+- **`control_zrr`** / **`treatment_zrr`**: Zero Result Rate by tier
 
 ### Quality Metrics
-- **`woowa_search_avg_click_rank`**: Average position clicked
-- **`woowa_search_pct_clicks_pos_1`**: % of clicks on position 1
-- **`woowa_search_avg_results`**: Average vendors shown
+- **`control_avg_click_rank`** / **`treatment_avg_click_rank`**: Average position clicked
+
+### Comparison Metrics
+- **`ctr_pct_change`** / **`cvr_pct_change`**: % difference Treatment vs Control
+- **`ctr_stat_sig`** / **`cvr_stat_sig`**: Statistical significance
 
 ---
 
-## 📈 Typical Performance Patterns
+## 🎯 How to Interpret Results
 
-### Expected CTR by Tier:
+### 1. Understanding Unified Tiers 🔄
 
-| Tier | Expected CTR | Why |
-|------|--------------|-----|
-| **Head** | **Highest** (12-15%) | Users know what they want, clear intent |
-| **Torso** | **Medium** (8-10%) | Moderate intent clarity |
-| **Tail** | **Lowest** (4-6%) | Ambiguous, typos, rare items |
+**Important:** Tiers are calculated on **combined Control + Treatment volume**, not separately.
 
-**⚠️ Warning:** If Tail CTR is higher than Head CTR, something is wrong!
+**Why this matters:**
+```
+❌ Old approach (separate tiers):
+  Query "pizza": Head in Control, Torso in Treatment → Can't compare!
 
----
+✅ New approach (unified tiers):
+  Query "pizza": Head in both Control and Treatment → Fair comparison!
+```
 
-### Expected ZRR by Tier:
-
-| Tier | Expected ZRR | Why |
-|------|--------------|-----|
-| **Head** | **Lowest** (<3%) | Popular items, good coverage |
-| **Torso** | **Medium** (3-8%) | Moderate coverage |
-| **Tail** | **Highest** (>10%) | Rare/niche items, typos |
-
-**💡 Insight:** High Tail ZRR is expected and acceptable.
+**Validation Check:**
+- `control_unique_queries` should equal `treatment_unique_queries` for each tier
+- If not equal → Bug in tier calculation
 
 ---
 
-## 🎯 Strategic Insights by Tier
+### 2. Typical Performance Patterns 📊
 
-### Head Searches (Top 50% of Volume)
+**Pattern 1: Head Tier Wins 🏆**
+```
+Head:   Control CVR 5.2%, Treatment CVR 5.8% (+11.5%, significant)
+Torso:  Control CVR 3.8%, Treatment CVR 4.2% (+10.5%, significant)
+Tail:   Control CVR 1.8%, Treatment CVR 1.9% (+2.8%, not significant)
+```
+**Interpretation:**
+- Treatment wins across all tiers
+- Head tier shows strongest improvement
+- Tail improvement not statistically significant (expected - lower volume)
 
+**Action:** Ship treatment - consistent wins, strongest in Head where volume matters most
+
+---
+
+**Pattern 2: Mixed Results ⚠️**
+```
+Head:   Control CVR 5.2%, Treatment CVR 5.6% (+7.7%, significant)
+Torso:  Control CVR 3.8%, Treatment CVR 3.5% (-7.9%, significant) ← LOSING
+Tail:   Control CVR 1.8%, Treatment CVR 1.9% (+5.6%, not significant)
+```
+**Interpretation:**
+- Head tier wins
+- Torso tier LOSES (significant degradation)
+- Overall metric might be positive (Head volume > Torso volume)
+
+**Action:** Investigate Torso tier losses before shipping
+- Run detailed query filtered to Torso queries
+- Understand what's different about Torso
+- Consider shipping only for Head tier
+
+---
+
+**Pattern 3: Tail Tier Only Wins 🤔**
+```
+Head:   Control CVR 5.2%, Treatment CVR 5.0% (-3.8%, not significant)
+Torso:  Control CVR 3.8%, Treatment CVR 3.7% (-2.6%, not significant)
+Tail:   Control CVR 1.8%, Treatment CVR 2.5% (+38.9%, significant) ← WINNING
+```
+**Interpretation:**
+- Tail tier shows massive improvement
+- Head/Torso flat or slightly negative
+- Overall metric might be negative (Head volume >> Tail volume)
+
+**Action:** Investigate further
+- Tail has low volume → high variance
+- Check if Tail win is from a few queries or broad-based
+- Probably not worth shipping if Head/Torso don't win
+
+---
+
+### 3. Volume vs Impact Trade-off ⚖️
+
+**Key Insight:** Head tier has most volume, Tail tier has most queries
+
+**Example:**
+```
+Head:  50% of searches, 245 queries   → High volume, low query diversity
+Torso: 30% of searches, 680 queries   → Medium volume, medium diversity
+Tail:  20% of searches, 1,845 queries → Low volume, high query diversity
+```
+
+**Optimization Priority:**
+1. **Head tier** - Highest impact (50% of traffic)
+2. **Torso tier** - Medium impact (30% of traffic)
+3. **Tail tier** - Lowest impact (20% of traffic), but most queries
+
+**Shipping Decision:**
+- ✅ Ship if Head wins (drives 50% of traffic)
+- 🤔 Reconsider if Head loses (even if Torso/Tail win)
+- ⚠️ Don't ship if Head shows significant degradation
+
+---
+
+### 4. Statistical Significance by Tier 📉
+
+**Expected Pattern:**
+- Head tier: Usually significant (high volume)
+- Torso tier: Sometimes significant (medium volume)
+- Tail tier: Rarely significant (low volume)
+
+**Why Tail might not be significant:**
+```
+Head:  625,000 searches → Enough for significance testing
+Torso: 312,500 searches → Enough for significance testing
+Tail:  312,500 searches BUT spread across 1,845 queries
+       → ~170 searches/query → Often not enough per query
+```
+
+**Action:** Don't worry if Tail tier shows "not significant"
+- Lower volume makes significance harder to achieve
+- Focus on Head and Torso tiers for decision-making
+
+---
+
+## 🚨 Common Patterns & Actions
+
+### Pattern 1: Consistent Win Across All Tiers ✅
+```
+Head:  +12% CVR (significant)
+Torso: +8% CVR (significant)
+Tail:  +5% CVR (not significant)
+```
+**Action:** Clear win - ship treatment immediately
+
+---
+
+### Pattern 2: Head Wins, Others Neutral 👍
+```
+Head:  +15% CVR (significant)
+Torso: +2% CVR (not significant)
+Tail:  -1% CVR (not significant)
+```
+**Action:** Ship treatment - Head drives majority of traffic
+
+---
+
+### Pattern 3: Head Loses, Torso/Tail Win ⚠️
+```
+Head:  -5% CVR (significant) ← PROBLEM
+Torso: +8% CVR (significant)
+Tail:  +12% CVR (not significant)
+```
+**Action:** DO NOT SHIP - Head tier degradation outweighs other wins
+- Investigate why Head is losing
+- Fix Head tier issues first
+
+---
+
+### Pattern 4: Torso Wins, Head/Tail Neutral 🤔
+```
+Head:  +1% CVR (not significant)
+Torso: +15% CVR (significant) ← BIG WIN
+Tail:  +3% CVR (not significant)
+```
+**Action:** Consider shipping - Torso represents 30% of traffic
+- Validate Torso win is broad-based (not a few queries)
+- Ensure Head doesn't show hidden degradation
+
+---
+
+## 💡 Next Steps After Tier Query
+
+### If All Tiers Win:
+1. ✅ Run **Detailed query** → Validate wins are broad-based, not driven by a few queries
+2. ✅ Run **Query Classification** → Check if certain query types drive the win
+3. ✅ Ship treatment confidently
+
+### If Head Wins, Others Flat:
+1. 👍 Run **Detailed query filtered to Head** → Which Head queries drive the win?
+2. 👍 Ship treatment - Head is 50% of traffic
+
+### If Mixed Results:
+1. 🤔 Run **Detailed query** → Identify specific winning/losing queries
+2. 🤔 Run **Query Classification** → See if pattern aligns with query types
+3. 🤔 Investigate root cause of losses before shipping
+
+### If Only Tail Wins:
+1. ⚠️ Run **Detailed query filtered to Tail** → Is win from a few queries or broad-based?
+2. ⚠️ Check if improvement is real or statistical noise (Tail has low volume)
+3. ⚠️ Probably don't ship if Head/Torso don't improve
+
+---
+
+## 🎯 Optimization Strategy by Tier
+
+### Head Tier (Top 50% volume)
 **Characteristics:**
-- 📊 Always 50% of total volume (by definition)
-- 🎯 High intent, clear queries
-- ✅ Should have highest CTR/CVR
-- 💰 Highest revenue impact
+- High volume, popular queries
+- Users know exactly what they want
+- Examples: "pizza", "chicken", "burger"
 
-**Optimization Priority:** **CRITICAL** ⭐⭐⭐
-- Every 1% CTR improvement = massive impact
-- These searches fund the business
-- Must perform excellently
-- **Dynamic**: Tier assignment adjusts as traffic patterns change
+**Optimization Focus:**
+- Ranking quality (position 1-3 matters most)
+- Speed (users expect instant results)
+- Exact match positioning
 
-**Red Flags:**
-- ❌ Head CTR lower than Torso/Tail
-- ❌ High ZRR (>5%) in Head
-- ❌ Avg click rank >3.0
-- ❌ <50% clicks in top 3 positions
-
-**Example Head Searches:**
-- "pizza"
-- "chicken"
-- "burger"
-- "sushi"
+**Success Metrics:**
+- CVR improvement (orders matter)
+- Click rank improvement (higher positions)
+- Low zero result rate
 
 ---
 
-### Torso Searches (Next 30% of Volume)
-
+### Torso Tier (Next 30% volume)
 **Characteristics:**
-- 📊 Always 30% of total volume (by definition)
-- 🎯 Moderate intent
-- ✅ Good optimization opportunity
-- 💰 Meaningful revenue contribution
+- Medium volume, somewhat popular queries
+- Mix of specific and exploratory intent
+- Examples: "italian pasta", "spicy ramen"
 
-**Optimization Priority:** **HIGH** ⭐⭐
-- Underserved opportunity
-- Easier wins than Head (less competitive)
-- Can significantly improve overall metrics
-- **Dynamic**: More queries than Head but each with lower individual volume
+**Optimization Focus:**
+- Relevance (varied intents)
+- Query understanding
+- Result diversity
 
-**Red Flags:**
-- ❌ Torso CTR much lower than Head (>30% gap)
-- ❌ High ZRR (>10%)
-- ❌ Many Torso searches that should be Head
-
-**Example Torso Searches:**
-- "birthday cake delivery"
-- "vegan pizza"
-- "korean fried chicken"
+**Success Metrics:**
+- CTR improvement (more relevant results)
+- CVR improvement
+- Lower pagination rate (find what they want on page 1)
 
 ---
 
-### Tail Searches (Bottom 20% of Volume)
-
+### Tail Tier (Bottom 20% volume)
 **Characteristics:**
-- 📊 Always 20% of total volume (by definition)
-- 🎯 Low/ambiguous intent
-- ⚠️ Typos, rare items, exploratory
-- 💰 Low individual impact
-- **Very large number** of unique queries (long tail)
+- Low volume, rare/unique queries
+- High variance in performance
+- Examples: "gluten free vegan pizza near me"
 
-**Optimization Priority:** **LOW** ⭐
-- Don't over-optimize
-- Diminishing returns
-- Focus on preventing zero results
-- **Many queries**: Thousands of unique terms, each with very few searches
+**Optimization Focus:**
+- Query expansion (handle unique queries)
+- Fallback strategies (when exact match fails)
+- Avoid zero results
 
-**Acceptable Performance:**
-- ✅ Lower CTR is expected
-- ✅ Higher ZRR is acceptable (10-20%)
-- ✅ Some tail searches are noise
-
-**Red Flags:**
-- ❌ Tail volume >20% (too much noise)
-- ❌ ZRR >30% (coverage issue)
-
-**Example Tail Searches:**
-- "spicy tofu pizza with extra cheese"
-- "pizzza" (typo)
-- "late night food near gangnam"
+**Success Metrics:**
+- Zero result rate reduction
+- CTR improvement (finding anything relevant)
+- Don't degrade (hard to improve significantly)
 
 ---
 
-## 📊 Sample Output Analysis
+## 📊 Example Analysis Workflow
 
-### Example Results:
-
-```
-search_vertical: ALL
-
-HEAD (≥100 searches):
-- woowa_search_searches: 85,340 (68% of volume)
-- woowa_search_unique_search_terms: 245
-- woowa_search_ctr: 0.1250
-- woowa_search_avg_click_rank: 2.1
-- woowa_search_pct_clicks_pos_1: 52%
-
-TORSO (20-99 searches):
-- woowa_search_searches: 28,450 (23% of volume)
-- woowa_search_unique_search_terms: 680
-- woowa_search_ctr: 0.0890
-- woowa_search_avg_click_rank: 3.2
-- woowa_search_pct_clicks_pos_1: 38%
-
-TAIL (<20 searches):
-- woowa_search_searches: 11,550 (9% of volume)
-- woowa_search_unique_search_terms: 1,845
-- woowa_search_ctr: 0.0520
-- woowa_search_avg_click_rank: 4.5
-- woowa_search_pct_clicks_pos_1: 22%
-```
-
-### Interpretation:
-
-✅ **Healthy Pattern:**
-- Head has highest CTR (12.5%)
-- Head has best click rank (2.1)
-- Head has most clicks at #1 (52%)
-- Volume distribution is reasonable (68/23/9)
-
-📊 **Volume Distribution:**
-- 245 Head terms drive 68% of searches = **348 searches/term average**
-- 680 Torso terms drive 23% of searches = **42 searches/term average**
-- 1,845 Tail terms drive 9% of searches = **6 searches/term average**
-
-💡 **Strategic Focus:**
-- **Priority 1:** Optimize those 245 Head terms (68% of volume!)
-- **Priority 2:** Improve Torso CTR from 8.9% → closer to Head
-- **Priority 3:** Don't worry too much about Tail
-
----
-
-## 🚨 Red Flags to Watch For
-
-### 1. Inverted Performance (CRITICAL)
-```
-Head CTR: 0.0650
-Torso CTR: 0.0890  ← Higher than Head!
-Tail CTR: 0.0520
-```
-**Problem:** Head searches should perform BEST, not worst!
-**Action:** Investigate Head search quality immediately
-
----
-
-### 2. Excessive Tail Volume
-```
-Head: 45% of volume
-Torso: 30% of volume
-Tail: 25% of volume  ← Too high!
-```
-**Problem:** Too many rare/low-quality searches
-**Action:** Check for:
-- Bot traffic
-- Typos not being corrected
-- Poor autocomplete
-
----
-
-### 3. Head Zero Results
-```
-Head ZRR: 0.0850 (8.5%)  ← Too high!
-```
-**Problem:** Popular searches returning no results
-**Action:** Catalog coverage issue - add missing items
-
----
-
-### 4. Poor Torso Performance
-```
-Head CTR: 0.1200
-Torso CTR: 0.0450  ← 62% lower!
-```
-**Problem:** Large performance gap
-**Action:** Torso searches are underserved - big opportunity!
-
----
-
-## 💡 Optimization Strategies by Tier
-
-### Head Optimization:
-1. **Ranking Quality:**
-   - Top results must be perfect
-   - Leverage click data (most signals)
-   - Personalization opportunities
-
-2. **Zero Results:**
-   - Zero tolerance for ZRR
-   - Add missing items immediately
-   - Spell correction critical
-
-3. **Merchandising:**
-   - Curate top results manually if needed
-   - Promoted placements
-   - Seasonal adjustments
-
----
-
-### Torso Optimization:
-1. **Coverage:**
-   - Ensure good vendor coverage
-   - Reduce ZRR to <8%
-
-2. **Ranking:**
-   - Apply Head learnings
-   - Semantic matching
-   - Category-based ranking
-
-3. **Discovery:**
-   - Surface related items
-   - "You might also like"
-
----
-
-### Tail Optimization:
-1. **Zero Results Prevention:**
-   - Spell correction
-   - Did you mean?
-   - Fuzzy matching
-
-2. **Fallbacks:**
-   - Show popular items
-   - Category fallbacks
-   - Location-based suggestions
-
-3. **Don't Over-Index:**
-   - Accept lower CTR
-   - Don't spend too much time here
-
----
-
-## 📊 Comparison Insights
-
-### Global Search vs Woowa Search by Tier:
-
-**If Global Search improves all tiers equally:**
-```
-Head: +15% CTR
-Torso: +14% CTR
-Tail: +16% CTR
-```
-= **Across-the-board improvement** ✅
-
----
-
-**If Global Search only improves Head:**
-```
-Head: +20% CTR
-Torso: +2% CTR
-Tail: -5% CTR
-```
-= **Optimized for popular searches** (valid strategy!)
-
----
-
-**If Global Search only improves Tail:**
-```
-Head: +3% CTR
-Torso: +5% CTR
-Tail: +25% CTR
-```
-= **Wasting effort on low-impact searches** ⚠️
-
----
-
-## 🎓 Advanced Analysis
-
-### Calculate Volume Concentration:
+**Step 1: Overall Query**
 ```sql
--- What % of searches come from top N terms?
-woowa_search_searches (Head) / total_searches = 68%
-245 terms = 68% of volume
-
-= High concentration (good!)
-= Easy to optimize (focus on 245 terms)
+-- Run overall_comparison_query_ab_test.sql
+-- Result: Treatment +7.78% CVR, significant
+-- Question: Which tier drives this win?
 ```
 
-### Calculate Long Tail Index:
+**Step 2: Tier Breakdown**
 ```sql
-Tail unique terms / Total unique terms
-= 1,845 / (245 + 680 + 1,845)
-= 67% of unique terms are Tail
-
-But Tail is only 9% of volume
-= Healthy long tail (not excessive)
+-- Run head_torso_tail_comparison_query_ab_test.sql
+-- Result:
+--   Head:  +12% CVR (significant) ✅
+--   Torso: +5% CVR (significant) ✅
+--   Tail:  +2% CVR (not significant) ➖
 ```
+
+**Step 3: Interpretation**
+- Head tier drives the overall win (+12% CVR)
+- Torso tier also wins (+5% CVR)
+- Tail tier shows slight improvement but not significant (expected)
+- **Conclusion:** Consistent win across important tiers
+
+**Step 4: Validation**
+```sql
+-- Run comprehensive_comparison_query_ab_test.sql
+-- Filter to Head tier queries
+-- Validate: Are wins broad-based or driven by a few queries?
+```
+
+**Step 5: Decision**
+- Head and Torso both win significantly → Ship treatment ✅
 
 ---
 
-## 📋 Recommended Actions
+## 🔍 Advanced Analysis Tips
 
-### Weekly:
-1. Run this query to track tier performance
-2. Monitor Head CTR (must stay high!)
-3. Check Tail volume % (flag if >20%)
+### 1. Check Query Count Consistency
+```sql
+-- Both variations should have SAME unique_queries per tier
+SELECT frequency_tier, control_unique_queries, treatment_unique_queries
+FROM results
+WHERE control_unique_queries != treatment_unique_queries;
+-- Should return 0 rows (if unified tiers work correctly)
+```
 
-### Monthly:
-1. Deep dive into Head searches (top 50)
-2. Identify Torso → Head promotions
-3. Analyze Tail → Torso graduates
+### 2. Calculate Impact by Tier
+```sql
+-- Which tier contributes most to overall CVR improvement?
+Tier Impact = (Tier % of volume) × (Tier CVR improvement)
 
-### Quarterly:
-1. Redefine tier thresholds if needed
-2. Compare tier performance YoY
-3. Adjust optimization priorities
+Example:
+Head:  50% volume × +12% CVR = 6.0% contribution
+Torso: 30% volume × +5% CVR  = 1.5% contribution
+Tail:  20% volume × +2% CVR  = 0.4% contribution
+Total:                         7.9% overall improvement ✓
+```
+
+### 3. Look for Anti-Patterns
+- ⚠️ Head losing + Overall winning → Torso/Tail can't compensate
+- ⚠️ Huge Tail win + small volume → Likely noise, not real signal
+- ⚠️ Different unique_queries count → Tier calculation bug
 
 ---
 
-## 🚀 Quick Start
+## 📅 Date Range
 
-```bash
-# Copy query
-pbcopy < ~/woowa_search_analysis/head_torso_tail_comparison_query.sql
+All queries use **fixed date range: May 30 - June 17, 2026 (inclusive)**
 
-# Run in BigQuery
-
-# Expected output: 9 rows (3 verticals × 3 tiers)
-```
-
----
-
-## 💾 Export Tips
-
-### For Reporting:
-```
-1. Export to Google Sheets
-2. Create pivot: Vertical (rows) × Tier (columns)
-3. Color code: Green (Head), Yellow (Torso), Red (Tail)
-4. Add sparklines for trend tracking
-```
-
-### Key Viz:
-- **Stacked bar:** Volume % by tier
-- **Line chart:** CTR by tier over time
-- **Scatter plot:** CTR vs Volume by tier
+This ensures:
+- ✅ Consistent tier definitions across analyses
+- ✅ Reproducible results
+- ✅ Fair comparison between Control and Treatment
 
 ---
 
 ## 🔗 Related Queries
 
-- **Overall Query**: High-level all searches
-- **Detailed Query**: Per-search-term breakdown
-- **This Query**: Aggregate by frequency tier
-
-**Workflow:**
-1. Overall → Is there an issue?
-2. Head/Torso/Tail → Which tier has the issue?
-3. Detailed → Which specific searches in that tier?
+- **`overall_comparison_query_ab_test.sql`** - High-level summary
+- **`comprehensive_comparison_query_ab_test.sql`** - Drill down by specific query
+- **`query_classification_breakdown_ab_test.sql`** - Drill down by classification
+- **`exact_match_analysis_queries.sql`** - Restaurant query analysis
 
 ---
 
-## 📅 Last Updated
-May 27, 2026
+## 🎯 Key Takeaways
+
+1. **Focus on Head tier** - Drives 50% of traffic, highest impact
+2. **Unified tiers matter** - Ensures fair comparison between variations
+3. **Don't ship if Head loses** - Even if Torso/Tail win
+4. **Tail tier significance is rare** - Lower volume makes it harder
+5. **Use this to find optimization opportunities** - Different tiers need different strategies

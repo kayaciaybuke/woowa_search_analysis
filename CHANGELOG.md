@@ -1,5 +1,78 @@
 # Query Changes - Latest Update
 
+## Changes Made on June 24, 2026 (v3.1 - Date Standardization & Documentation Cleanup)
+
+### 🔧 STANDARDIZED: Fixed Date Ranges Across All AB Test Queries
+
+**Issue:** AB test queries used dynamic dates (CURRENT_DATE() - 1, CURRENT_DATE() - 14) which caused inconsistent analysis windows.
+
+**Solution:** Standardized all AB test queries to use the same fixed date range:
+- **Start Date:** May 30, 2026 (AB test launch)
+- **End Date:** June 17, 2026 (inclusive, last complete day)
+
+**Files Updated:**
+1. `overall_comparison_query_ab_test.sql`
+2. `head_torso_tail_comparison_query_ab_test.sql`
+3. `comprehensive_comparison_query_ab_test.sql`
+4. `query_classification_breakdown_ab_test.sql`
+
+**Why This Matters:**
+- ✅ Consistent analysis window across all queries
+- ✅ Reproducible results (same date range every time)
+- ✅ Aligns with exact match analysis date range
+- ✅ Easier to compare results across different query types
+
+---
+
+### 🆕 NEW: Exact Match Analysis Queries Added
+
+**New File:** `exact_match_analysis_queries.sql`
+
+**What It Does:**
+- Analyzes restaurant queries by exact match positioning (rank_1, displaced, no_match)
+- Tracks order attribution (exact match vendor vs other vendors)
+- Uses last-click attribution model
+- Fixed date range: May 30 - June 17, 2026
+
+**Key Findings Documented:**
+- 95.1% of rank_1 orders come from the exact match vendor
+- Displacement causes 86% CVR drop (21.68% → 3.05%)
+- Exact match at position 1 has 21.68% CVR
+
+**New Guide:** `EXACT_MATCH_ANALYSIS_GUIDE.md`
+- Methodology explanation
+- Technical notes on vendor ID matching
+- Key findings and insights
+
+---
+
+### 🧹 CLEANUP: Documentation Consolidation
+
+**Files Removed (Redundant/Temporary):**
+1. `CLICK_POSITION_TRACKING_HACK.md` - Superseded by updated version
+2. `CLEANUP_SUMMARY_SHORT.md` - Temporary summary of completed work
+3. `DATA_CLEANUP_SUMMARY.md` - Temporary summary of completed work
+4. `AB_TEST_FIX_SUMMARY.md` - Temporary summary of completed work
+5. `AB_TEST_FILTERS_SUMMARY.md` - Redundant with AB_TEST_QUICK_START.md
+6. `AB_TEST_FILTERS_REFERENCE.md` - Redundant with AB_TEST_QUICK_START.md
+7. `AB_TEST_ANALYST_GUIDE.md` - Redundant with AB_TEST_QUICK_START.md
+8. `woowa_search_query_guide.md` - Redundant with README.md
+9. `QUERY_COMPARISON.md` - Redundant
+10. `UNIFIED_TIERS_EXPLAINED.md` - Redundant with HEAD_TORSO_TAIL_GUIDE.md
+
+**File Renamed:**
+- `CLICK_POSITION_TRACKING_HACK_UPDATED.md` → `CLICK_POSITION_TRACKING_HACK.md`
+
+**README.md Updated:**
+- Removed references to deleted files
+- Updated date range information (fixed May 30 - June 17, 2026)
+- Added DATA_FILTERING_CONSTRAINTS.md to reference docs
+- Updated version to v3.1
+
+**Result:** Cleaner documentation structure with only relevant, current files.
+
+---
+
 ## Changes Made on May 28, 2026 (v3.0 - AB Test Support)
 
 ### 🔧 FIXED: Corrected Variation Values (Critical Fix)

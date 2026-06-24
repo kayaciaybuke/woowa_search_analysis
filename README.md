@@ -56,7 +56,7 @@ Compare Control vs Treatment variations using Eppo assignment data during active
 
 7. **`query_classification_breakdown_ab_test.sql`** 🏷️ **QUERY CLASSIFICATION BREAKDOWN**
    - Control vs Treatment by Vertical × Tier × Query Classification
-   - Last 2 weeks of data
+   - Date range: May 30 - June 17, 2026 (inclusive)
    - Classifications: restaurant, item, cuisine, unclassified
    - Use this for: "How do different query types perform in AB test?"
 
@@ -66,7 +66,7 @@ Compare Control vs Treatment variations using Eppo assignment data during active
    - Last-click attribution model
    - Use this for: "How does exact match positioning affect conversion?"
 
-**⚠️ AB Test Important:** All AB test queries require yesterday's data due to D+1 assignment lag. See `AB_TEST_QUICK_START.md` for details.
+**⚠️ AB Test Important:** All AB test queries use a fixed date range (May 30 - June 17, 2026) for consistent analysis. See `AB_TEST_QUICK_START.md` for details.
 
 ### Guides & Documentation
 
@@ -105,18 +105,14 @@ Compare Control vs Treatment variations using Eppo assignment data during active
   - Column-by-column explanation
   - Red flags to watch for
 
-- **`woowa_search_query_guide.md`**
-  - Complete guide to the query package
-  - Sample queries
-  - Field documentation
-
 - **`CHANGELOG.md`**
   - Latest changes and updates
   - Why each change was made
 
-- **`sample_perseus_data.sql`**
-  - Query to explore your data first
-  - See what fields are available
+- **`DATA_FILTERING_CONSTRAINTS.md`**
+  - Complete filter specifications
+  - What data is included/excluded
+  - Filter rationale and validation
 
 **Technical Details:**
 - **`CLICK_POSITION_TRACKING_HACK.md`** ⚠️ **IMPORTANT**
@@ -139,8 +135,8 @@ Compare Control vs Treatment variations using Eppo assignment data during active
 - ✅ Includes NULL_VERTICAL traffic
 
 **Use AB Test queries when:**
-- ✅ Comparing Control vs Treatment during active AB test
-- ✅ Yesterday's data only (D+1 lag requirement)
+- ✅ Comparing Control vs Treatment during AB test period
+- ✅ Analyzing May 30 - June 17, 2026 data (fixed AB test period)
 - ✅ Analyzing assigned users with exposure gating
 - ✅ Validating AB test traffic split
 
@@ -173,12 +169,12 @@ Compare Control vs Treatment variations using Eppo assignment data during active
 ### AB Test Queries
 
 #### Use **AB Test Overall Query** When:
-- ✅ Daily AB test check-in
+- ✅ AB test summary analysis
 - ✅ Validating traffic split (~50/50)
 - ✅ Quick Control vs Treatment comparison
 - ✅ Checking for significant differences
 - **Output:** 2-3 rows (ALL, BAEMIN_DELIVERY only)
-- **⚠️ Requirement:** Yesterday's data (D+1 lag)
+- **Date Range:** May 30 - June 17, 2026 (fixed)
 
 #### Use **AB Test Head/Torso/Tail Query** When:
 - ✅ Understanding which tier wins/loses
@@ -186,7 +182,7 @@ Compare Control vs Treatment variations using Eppo assignment data during active
 - ✅ Checking if Head tier performs better
 - ✅ Tier-specific optimization planning
 - **Output:** 6-9 rows (2-3 verticals × 3 tiers)
-- **⚠️ Requirement:** Yesterday's data (D+1 lag)
+- **Date Range:** May 30 - June 17, 2026 (fixed)
 
 #### Use **AB Test Detailed Query** When:
 - ✅ Finding which queries win/lose
@@ -194,7 +190,7 @@ Compare Control vs Treatment variations using Eppo assignment data during active
 - ✅ Investigating specific search term issues
 - ✅ Validating treatment improvements
 - **Output:** Hundreds/thousands of rows (one per search query)
-- **⚠️ Requirement:** Yesterday's data (D+1 lag)
+- **Date Range:** May 30 - June 17, 2026 (fixed)
 
 ### Recommended Workflows
 
@@ -209,7 +205,8 @@ Compare Control vs Treatment variations using Eppo assignment data during active
 2. **Check traffic split** → Is it ~50/50? (e.g., "50.2% treatment traffic")
 3. **Run Head/Torso/Tail AB Test** → Which tier wins? (e.g., "Head +12%, Torso +5%")
 4. **Use Detailed AB Test** → Which queries win/lose? (e.g., "Top 10 wins, Top 10 losses")
-5. **Validate before shipping** → Ensure consistent improvements across tiers
+5. **Run Exact Match Analysis** → How does exact match positioning affect conversion?
+6. **Validate before shipping** → Ensure consistent improvements across tiers
 
 ---
 
@@ -251,34 +248,26 @@ DECLARE end_date DATE DEFAULT DATE '2026-05-26';
 
 ### Option B: AB Test Analysis (Control vs Treatment)
 
-**⚠️ IMPORTANT: Must use yesterday's data (D+1 lag)**
-
 **Step 1: Open the AB Test Overall Query**
 ```bash
 open ~/woowa_search_analysis/overall_comparison_query_ab_test.sql
 ```
 
-**Step 2: Verify Date (Line 6)**
+**Step 2: Verify Date Range (Lines 6-7)**
 ```sql
-DECLARE report_date DATE DEFAULT CURRENT_DATE() - 1;  -- Always yesterday!
+DECLARE start_date DATE DEFAULT '2026-05-30';  -- AB test start date
+DECLARE end_date DATE DEFAULT '2026-06-17';    -- AB test end date (inclusive)
 ```
 
 **Step 3: Run in BigQuery**
 - You'll get 2-3 rows (ALL, BAEMIN_DELIVERY only)
 - Check `treatment_traffic_pct` (should be ~50%)
-- Perfect for daily AB test check-ins!
+- Analysis covers full AB test period (May 30 - June 17, 2026)
 
-**Date Options for AB Test:**
-```sql
--- ✅ CORRECT: Yesterday (D+1 lag)
-DECLARE report_date DATE DEFAULT CURRENT_DATE() - 1;
-
--- ✅ CORRECT: Specific past date
-DECLARE report_date DATE DEFAULT DATE '2026-05-27';
-
--- ❌ WRONG: Today (incomplete assignments)
-DECLARE report_date DATE DEFAULT CURRENT_DATE();
-```
+**Date Range:**
+All AB test queries use the same fixed date range for consistency:
+- **Start:** May 30, 2026 (AB test launch)
+- **End:** June 17, 2026 (inclusive)
 
 **📖 For more AB test details:** See `AB_TEST_QUICK_START.md`
 
@@ -405,15 +394,17 @@ All files are in: `~/woowa_search_analysis/`
 ---
 
 ## 📅 Last Updated
-May 28, 2026
+June 24, 2026
 
 ## 🏷️ Version
-v3.0 - Added AB Test queries with Eppo assignment integration
+v3.1 - Standardized date ranges and documentation cleanup
+- ✅ Fixed date range (May 30 - June 17, 2026) across all AB test queries
+- ✅ Added Exact Match Analysis queries and guide
+- ✅ Cleaned up redundant documentation
 - ✅ AB Test: Control vs Treatment comparison
-- ✅ D+1 lag support for assignment data
 - ✅ Unified tier calculation across variations
 - ✅ Traffic split validation
-- ✅ Platform Comparison: Woowa vs Global Search (existing)
+- ✅ Platform Comparison: Woowa vs Global Search
 
 ## 🔗 Related Resources
 

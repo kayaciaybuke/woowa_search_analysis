@@ -1,10 +1,10 @@
 -- =================================================================
 -- OVERALL COMPARISON QUERY - AB TEST VERSION
 -- Compares Control vs Treatment variations using Eppo assignments
--- Date range: May 30, 2026 to Yesterday (D+1 lag for assignments)
+-- Date range: May 30 - June 17, 2026 (inclusive)
 -- =================================================================
 DECLARE start_date DATE DEFAULT '2026-05-30';  -- AB test start date
-DECLARE end_date DATE DEFAULT CURRENT_DATE() - 1;  -- Yesterday (D+1 lag)
+DECLARE end_date DATE DEFAULT '2026-06-17';    -- AB test end date (inclusive)
 -- =================================================================
 
 WITH assignments AS (

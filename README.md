@@ -60,6 +60,12 @@ Compare Control vs Treatment variations using Eppo assignment data during active
    - Classifications: restaurant, item, cuisine, unclassified
    - Use this for: "How do different query types perform in AB test?"
 
+8. **`exact_match_analysis_queries.sql`** 🎯 **EXACT MATCH ANALYSIS** (NEW!)
+   - Restaurant query performance by exact match positioning
+   - Order source tracking (exact match vendor vs others)
+   - Last-click attribution model
+   - Use this for: "How does exact match positioning affect conversion?"
+
 **⚠️ AB Test Important:** All AB test queries require yesterday's data due to D+1 assignment lag. See `AB_TEST_QUICK_START.md` for details.
 
 ### Guides & Documentation
@@ -70,6 +76,12 @@ Compare Control vs Treatment variations using Eppo assignment data during active
   - D+1 lag requirement explained
   - Assignment table structure
   - Common mistakes to avoid
+
+- **`EXACT_MATCH_ANALYSIS_GUIDE.md`** 🆕
+  - Exact match positioning analysis methodology
+  - Order attribution tracking (exact match vs other vendors)
+  - Key findings: 95.1% of rank_1 orders from exact match vendor
+  - Technical notes on vendor ID matching
 
 **Platform Comparison:**
 - **`OVERALL_COMPARISON_GUIDE.md`**
